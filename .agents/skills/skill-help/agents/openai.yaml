@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Help"
+  short_description: "Reference for local skills"
+  default_prompt: "Use $pond-skill-help to show the available local skills and when to use them."

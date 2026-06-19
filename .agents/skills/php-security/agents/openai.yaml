@@ -1,0 +1,4 @@
+interface:
+  display_name: "PHP Security"
+  short_description: "Secure PHP implementation and review"
+  default_prompt: "Use $pond-php-security to handle this PHP work securely."

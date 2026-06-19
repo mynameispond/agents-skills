@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug Mantra"
+  short_description: "Evidence-driven debugging workflow"
+  default_prompt: "Use $pond-debug-mantra to debug this failure with evidence."
