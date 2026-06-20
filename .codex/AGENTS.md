@@ -40,8 +40,8 @@
 - Do not refactor, rename, reformat, move, or restructure unrelated code.
 - Preserve backward compatibility for public APIs, command-line interfaces, configuration, schemas, stored data, routes, protocols, and file or wire formats unless the requested change explicitly alters them.
 - Do not overwrite or revert unrelated user changes. Leave unexpected modifications untouched and report them when relevant.
-- Present a concise implementation plan for every recommendation, code change, or modification, regardless of scale (including small, isolated, low-risk, or simple changes, as well as large, structural, complex, or high-risk work).
-- Do not proceed with any modifications or execution without first obtaining the user's explicit review and approval of the implementation plan.
+- For inspection-only work, reviews, audits, investigations, status checks, or read-only exploration, proceed directly without requiring an implementation plan.
+- Before making code, file, configuration, dependency, generated artifact, or other state changes, present a concise implementation plan and obtain the user's explicit review and approval.
 
 ## Safety boundaries
 
