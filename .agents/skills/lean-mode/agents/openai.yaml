@@ -1,4 +1,0 @@
-interface:
-  display_name: "Lean Mode"
-  short_description: "Smallest safe solution first"
-  default_prompt: "Use $pond-lean-mode to implement the simplest safe version of this change."

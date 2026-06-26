@@ -1,4 +1,0 @@
-interface:
-  display_name: "Scrutinize"
-  short_description: "Review changes with a ship verdict"
-  default_prompt: "Use $pond-scrutinize to review this change with findings and a verdict."

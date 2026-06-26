@@ -53,7 +53,7 @@ Do not run intrusive scans, brute force, exploit attempts, destructive tests, or
 
 ## Completion report
 
-Use the parent skill's Completion section as the reporting contract. Include these fields once, merged into the final response or `$pond-scrutinize` report instead of creating a second standalone completion report:
+Use the parent skill's Completion section as the reporting contract. Include these fields once, merged into the final response or active review report instead of creating a second standalone completion report:
 
 - detected PHP stack and entry points
 - security boundaries and attack classes considered

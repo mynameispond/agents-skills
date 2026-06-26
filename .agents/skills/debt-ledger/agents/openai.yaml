@@ -1,4 +1,0 @@
-interface:
-  display_name: "Debt Ledger"
-  short_description: "Collect deliberate debt markers"
-  default_prompt: "Use $pond-debt-ledger to list deliberate shortcut markers in this repository."

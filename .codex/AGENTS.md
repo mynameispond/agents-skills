@@ -9,20 +9,35 @@
 
 ## Skill delegation
 
-- Use `$pond-debug-mantra` as the primary workflow for unresolved bugs, errors, exceptions, failing tests, intermittent failures, or incorrect runtime behavior.
-- Use `$pond-scrutinize` for reviewing a plan, PR, diff, design, or proposed code change.
+- Use Superpowers as the primary workflow system.
+- Use `superpowers:systematic-debugging` for unresolved bugs, errors, exceptions, failing tests, intermittent failures, or incorrect runtime behavior.
+- Use `superpowers:brainstorming` and `superpowers:writing-plans` for new features, behavior changes, and multi-step implementation plans.
+- Use `superpowers:test-driven-development`, `superpowers:verification-before-completion`, and `superpowers:requesting-code-review` for implementation quality gates.
 - Use `$pond-php-security` for activated PHP work; keep it active as a security constraint when another workflow is primary.
-- Use `$pond-lean-mode` only when explicitly requested for lean, YAGNI, simplest safe solution, minimal implementation, shortest path, or over-engineering reduction.
 - Use `$pond-concise-output` only when explicitly requested for terse, brief, compact, or summary-only responses.
-- Use `$pond-debt-ledger` when asked to collect, audit, list, or write deliberate `debt:` markers.
-- Use `$pond-skill-help` when asked what skills are available or how to invoke them.
-- For a patch intended to fix a bug, gather debugging evidence first; use `$pond-scrutinize` for final review when the patch is non-trivial, security-sensitive, cross-module, user-facing, or explicitly requested.
-- When multiple skills apply, choose one primary workflow, treat the others as constraints or checklists, and do not duplicate trace or report sections. `$pond-lean-mode` and `$pond-concise-output` never replace debugging evidence, security controls, required validation, or review verdicts.
-- Do not duplicate the full debugging or review workflows in this file.
+- When multiple skills apply, choose one primary workflow and treat the others as constraints or checklists. Do not duplicate trace, review, validation, or report sections.
+- Do not duplicate the full debugging, planning, security, testing, or review workflows in this file.
+
+## Approval gate
+
+- Before changing code, files, configuration, dependencies, generated artifacts, or other project state, present the relevant diagnosis, approach, impact analysis, test plan, and documentation plan, then obtain the user's explicit approval.
+- Inspection-only work, reviews, audits, investigations, status checks, and read-only exploration may proceed without an implementation plan.
+
+## Bug workflow
+
+- Follow the active debugging workflow before proposing production changes.
+- The proposal must include root-cause evidence, affected areas, the smallest behavior-preserving fix, compatibility considerations, and regression coverage.
+
+## Feature workflow
+
+- Follow the active design and planning workflows before implementation.
+- The proposal must favor the simplest careful design and cover affected public APIs, routes, schemas, persistence, permissions, performance, observability, existing user workflows, tests, and documentation.
 
 ## Project conventions
 
 - Match the existing project structure, formatting, language idioms, and reusable components unless a rule in this file explicitly requires otherwise.
+- For an existing or legacy project, follow the project's established style and patterns even when a newer style is available, unless the task explicitly requires modernization.
+- For a new project, use modern, maintainable conventions appropriate to the chosen stack, while keeping the design simple and avoiding unnecessary abstractions or dependencies.
 - Prefer repository-provided formatters, linters, generators, and scripts over manual conventions.
 - Prefer existing utilities and dependencies before adding new abstractions or packages.
 - Keep existing symbols, public interfaces, and file organization stable unless the task requires changing them.
@@ -40,8 +55,6 @@
 - Do not refactor, rename, reformat, move, or restructure unrelated code.
 - Preserve backward compatibility for public APIs, command-line interfaces, configuration, schemas, stored data, routes, protocols, and file or wire formats unless the requested change explicitly alters them.
 - Do not overwrite or revert unrelated user changes. Leave unexpected modifications untouched and report them when relevant.
-- For inspection-only work, reviews, audits, investigations, status checks, or read-only exploration, proceed directly without requiring an implementation plan.
-- Before making code, file, configuration, dependency, generated artifact, or other state changes, present a concise implementation plan and obtain the user's explicit review and approval.
 
 ## Safety boundaries
 
@@ -51,16 +64,31 @@
 - When changing persistence behavior, inspect the current schema, migrations, data contracts, and compatibility requirements first.
 - Do not install dependencies, modify lockfiles, or change toolchain versions unless required by the task or explicitly approved.
 
+## PHP security
+
+- Treat PHP security as a first-class concern for PHP, Laravel, Symfony, WordPress, CMS, API, CLI, and mixed PHP work.
+- Keep `$pond-php-security` separate from the primary workflow: it adds security checks and constraints but does not replace debugging, planning, TDD, verification, or review.
+- Do not weaken authentication, authorization, validation, escaping, secret handling, session safety, tenant or ownership checks, CSRF protection, injection prevention, or other security boundaries.
+- Use the PHP security skill for detailed PHP threat modeling, implementation rules, negative tests, verification, and completion reporting.
+
 ## Validation
 
 - Use repository-provided tests, build commands, type checks, static analysis, linters, formatters, and validation scripts when available.
 - Run checks relevant to the changed area and broaden validation when the change has wider impact.
-- Add or update tests when behavior changes and the repository has an established testing pattern.
+- Add or update tests when behavior changes and the repository has an established or practical testing pattern.
+- Test coverage should include the relevant happy paths, regression cases, edge cases, invalid or malformed input, empty and boundary values, authorization or rejection paths, and security-sensitive failure modes.
+- For PHP work, include tests or checks for applicable authentication, authorization, validation, injection prevention, output encoding, CSRF/session behavior, tenant or ownership boundaries, and error-handling paths.
+- Before handing work to the user for review, run the most relevant targeted checks and any broader checks needed for confidence in the affected surface.
 - If a relevant check cannot be run, state which check was skipped and why.
+
+## Documentation
+
+- Add or update documentation for new or changed behavior when it affects usage, setup, configuration, public APIs, commands, schemas, routes, security expectations, or maintenance workflows.
+- Prefer the repository's existing documentation style and location, such as README sections, docs pages, inline docblocks, examples, changelog entries, or test documentation.
+- Documentation should explain the behavior, important constraints, security assumptions, and how to verify or use the changed code. Keep it proportional to the size and risk of the change.
 
 ## Cleanup and completion
 
 - Remove temporary diagnostics, generated scratch files, one-off scripts, and debug instrumentation before finishing unless the user explicitly asks to keep them.
 - Ensure the final change set contains only intended files and modifications.
-- In the final response, summarize what changed, what was validated, and any remaining risks, assumptions, or unverified behavior.
-- If `$pond-scrutinize` was used to review the change, include its required findings and verdict once in the final summary; do not suppress them or repeat a duplicate block.
+- In the final response, summarize what changed, what was validated, what documentation was added or updated, and any remaining risks, assumptions, or unverified behavior.

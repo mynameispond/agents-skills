@@ -11,11 +11,11 @@ Reduce prose, not rigor.
 
 This skill controls presentation only. It does not reduce tool use, code quality, validation, or required reporting.
 
-When combined with other skills:
+When combined with active workflows:
 
-- Keep `$pond-debug-mantra` evidence, reproduction status, and uncertainty labels.
-- Keep `$pond-scrutinize` findings, evidence, suggested changes, and verdict.
-- Keep `$pond-php-security` boundaries, controls, checks run, skipped checks, and residual risks.
+- Keep active debugging workflow evidence, reproduction status, and uncertainty labels.
+- Keep active review workflow findings, evidence, suggested changes, and verdict.
+- Keep active security workflow boundaries, controls, checks run, skipped checks, and residual risks.
 - Keep citations or source links when browsing was required.
 
 ## Response Shape

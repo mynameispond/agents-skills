@@ -28,11 +28,11 @@ PHP indicators are detectors for the relevant target, not sufficient reason to a
 
 Ignore PHP found only in dependencies, generated files, caches, fixtures, examples, backups, or build output. In a monorepo, apply this skill only to the affected PHP package.
 
-## Combining with other skills
+## Coordination
 
-- If `$pond-debug-mantra` also applies, use it as the primary workflow for reproduction, fail-path tracing, and root-cause evidence. Apply this skill to the security boundaries and attacker-controlled inputs on the traced PHP path.
-- If `$pond-scrutinize` also applies, use it for the final change review and verdict. Fold PHP-specific risks, controls, and residual assumptions into that review instead of producing a second standalone report.
-- Reuse one trace across active skills. Do not repeat the same route, controller, job, query, or output path in multiple sections unless the distinction changes the conclusion.
+- Use the active primary workflow for debugging, planning, implementation, verification, or review.
+- Apply this skill to PHP security boundaries, attacker-controlled inputs, and security-sensitive failure modes on the affected path.
+- Reuse one trace across active workflows. Do not repeat the same route, controller, job, query, or output path in multiple sections unless the distinction changes the conclusion.
 
 ## Mandatory security stance
 
@@ -211,6 +211,6 @@ Report:
 - Checks not run.
 - Remaining assumptions, compatibility concerns, and residual risk.
 
-When this skill is combined with `$pond-debug-mantra` or `$pond-scrutinize`, include these completion details once in the final response or review output instead of creating duplicate sections.
+When another workflow is also active, include these completion details once in the final response or review output instead of creating duplicate sections.
 
 Never claim the system is fully secure, vulnerability-free, compliant, or production-ready beyond the available evidence.
