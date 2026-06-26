@@ -7,15 +7,17 @@
 - When instructions conflict, prefer the more specific repository or directory-level instruction unless it is unsafe or the user explicitly overrides it.
 - Do not assume a programming language, framework, runtime, package manager, or test tool. Detect them from the repository before acting.
 
-## Skill delegation
+## Workflow routing
 
-- Use Superpowers as the primary workflow system.
-- Use `superpowers:systematic-debugging` for unresolved bugs, errors, exceptions, failing tests, intermittent failures, or incorrect runtime behavior.
-- Use `superpowers:brainstorming` and `superpowers:writing-plans` for new features, behavior changes, and multi-step implementation plans.
-- Use `superpowers:test-driven-development`, `superpowers:verification-before-completion`, and `superpowers:requesting-code-review` for implementation quality gates.
-- Use `$pond-php-security` for activated PHP work; keep it active as a security constraint when another workflow is primary.
-- Use `$pond-concise-output` only when explicitly requested for terse, brief, compact, or summary-only responses.
-- When multiple skills apply, choose one primary workflow and treat the others as constraints or checklists. Do not duplicate trace, review, validation, or report sections.
+- Use the best structured workflow support available in the current AI environment.
+- When Superpowers is available in the current environment, prefer:
+  - `superpowers:systematic-debugging` for unresolved bugs, errors, exceptions, failing tests, intermittent failures, or incorrect runtime behavior.
+  - `superpowers:brainstorming` and `superpowers:writing-plans` for new features, behavior changes, and multi-step implementation plans.
+  - `superpowers:test-driven-development`, `superpowers:verification-before-completion`, and `superpowers:requesting-code-review` for implementation quality gates.
+- If Superpowers or equivalent workflow tooling is unavailable, follow the fallback workflows in this file directly.
+- Use `$pond-php-security` for activated PHP work when local skills are available. If local skills are unavailable, apply the PHP security section in this file as the minimum security policy.
+- Use `$pond-concise-output` only when explicitly requested for terse, brief, compact, or summary-only responses. If local skills are unavailable, keep the response concise without dropping required evidence, validation, or caveats.
+- When multiple workflows apply, choose one primary workflow and treat the others as constraints or checklists. Do not duplicate trace, review, validation, or report sections.
 - Do not duplicate the full debugging, planning, security, testing, or review workflows in this file.
 
 ## Approval gate
@@ -25,13 +27,24 @@
 
 ## Bug workflow
 
-- Follow the active debugging workflow before proposing production changes.
+- Follow the active debugging workflow before proposing production changes. If no dedicated debugging workflow is available, use this fallback.
+- Establish reproduction when practical, or state why reproduction is not available.
+- Inspect the reported error, logs, stack trace, recent changes, configuration, and relevant call path.
+- Identify root-cause evidence before proposing a production fix. If the cause is still uncertain, label the proposal as defensive or diagnostic rather than confirmed.
 - The proposal must include root-cause evidence, affected areas, the smallest behavior-preserving fix, compatibility considerations, and regression coverage.
 
 ## Feature workflow
 
-- Follow the active design and planning workflows before implementation.
+- Follow the active design and planning workflows before implementation. If no dedicated design or planning workflow is available, use this fallback.
+- Inspect the existing project context, patterns, constraints, affected surfaces, and success criteria.
+- Prefer existing project patterns, utilities, framework features, and dependencies before adding new abstractions or packages.
 - The proposal must favor the simplest careful design and cover affected public APIs, routes, schemas, persistence, permissions, performance, observability, existing user workflows, tests, and documentation.
+
+## Implementation quality gates
+
+- Prefer test-first implementation for bug fixes, features, refactors, and behavior changes. If test-first is impractical, state why and still add the most useful regression or coverage available.
+- Before claiming work is complete, run fresh verification commands that prove the claim, read their output, and report failures or skipped checks accurately.
+- For non-trivial, security-sensitive, cross-module, or user-facing changes, perform a code review. If no review tool or subagent is available, self-review the diff against requirements, affected paths, security boundaries, tests, and documentation.
 
 ## Project conventions
 
