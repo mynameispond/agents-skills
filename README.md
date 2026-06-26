@@ -30,8 +30,8 @@ C:/Users/<USER>/.agents/skills
 
 | งาน | Workflow |
 | --- | --- |
-| แก้บัค | ถ้ามี Superpowers ให้ใช้ debugging workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: reproduce เท่าที่ทำได้, หา root cause ด้วยหลักฐาน, เสนอ fix ที่เล็กที่สุดและคง behavior เดิม, ขออนุมัติก่อนแก้จริง, แล้วทำ test/verification/review |
-| ทำฟีเจอร์ใหม่ | ถ้ามี Superpowers ให้ใช้ brainstorming/planning workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: สำรวจ context, เสนอ design ที่ง่ายที่สุดแต่รอบคอบ, ระบุผลกระทบ/test/docs, ขออนุมัติก่อนทำจริง, แล้ว verify/review |
+| แก้บัค | ถ้ามี Superpowers ให้ใช้ debugging workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: reproduce เท่าที่ทำได้, หา root cause ด้วยหลักฐาน, ตั้ง hypothesis จาก evidence, test ทีละตัวแปร, เสนอ fix ที่เล็กที่สุดและคง behavior เดิม, ขออนุมัติก่อนแก้จริง, แล้วทำ test/verification/review |
+| ทำฟีเจอร์ใหม่ | ถ้ามี Superpowers ให้ใช้ brainstorming/planning workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: สำรวจ context, ถาม clarification เมื่อไม่ชัด, เทียบ 2-3 approaches เมื่อ solution ไม่ obvious, เสนอ design ที่ง่ายที่สุดแต่รอบคอบ, ระบุผลกระทบ/test/docs, ขออนุมัติก่อนทำจริง, แล้ว verify/review |
 | งาน PHP | ใช้ workflow หลักตามประเภทงาน และเปิด `$pond-php-security` เป็น security constraint เพิ่มเติม |
 | คำตอบสั้น | ใช้ `$pond-concise-output` เมื่อผู้ใช้ขอคำตอบสั้น กระชับ หรือ summary-only |
 
@@ -46,6 +46,7 @@ C:/Users/<USER>/.agents/skills
 
 - ใช้ workflow ที่ดีที่สุดที่ environment นั้นมี ถ้ามี Superpowers ให้ใช้ Superpowers ก่อน
 - ถ้า AI environment ไม่มี Superpowers เช่น Antigravity ให้ใช้ fallback workflow ใน `.codex/AGENTS.md` โดยตรง
+- fallback ใน `AGENTS.md` มี quality gates สำหรับ test-first เมื่อทำได้, fresh verification, และ self-review เมื่อไม่มี review tool/subagent
 - ให้ `$pond-php-security` เป็น constraint ด้าน PHP security ไม่ใช่ workflow แทน debugging หรือ planning
 - ให้ `$pond-concise-output` คุมเฉพาะรูปแบบคำตอบ ไม่ลดคุณภาพการตรวจสอบหรือ validation
 - รายละเอียดนโยบายอยู่ใน `.codex/AGENTS.md`; รายละเอียดเฉพาะ skill อยู่ใน `.agents/skills/*/SKILL.md`

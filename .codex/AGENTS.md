@@ -30,21 +30,26 @@
 - Follow the active debugging workflow before proposing production changes. If no dedicated debugging workflow is available, use this fallback.
 - Establish reproduction when practical, or state why reproduction is not available.
 - Inspect the reported error, logs, stack trace, recent changes, configuration, and relevant call path.
+- Form a specific hypothesis only after inspecting evidence. Test one variable at a time and update the hypothesis when results contradict it.
 - Identify root-cause evidence before proposing a production fix. If the cause is still uncertain, label the proposal as defensive or diagnostic rather than confirmed.
+- If three fix attempts fail or each attempt exposes a different shared-state, coupling, or design problem, stop and reassess the underlying approach before trying another fix.
 - The proposal must include root-cause evidence, affected areas, the smallest behavior-preserving fix, compatibility considerations, and regression coverage.
 
 ## Feature workflow
 
 - Follow the active design and planning workflows before implementation. If no dedicated design or planning workflow is available, use this fallback.
 - Inspect the existing project context, patterns, constraints, affected surfaces, and success criteria.
+- Ask clarifying questions when requirements, success criteria, security boundaries, or compatibility expectations are unclear.
+- Compare 2-3 plausible approaches when the solution is not obvious. State the recommended approach and the trade-offs.
 - Prefer existing project patterns, utilities, framework features, and dependencies before adding new abstractions or packages.
 - The proposal must favor the simplest careful design and cover affected public APIs, routes, schemas, persistence, permissions, performance, observability, existing user workflows, tests, and documentation.
 
 ## Implementation quality gates
 
-- Prefer test-first implementation for bug fixes, features, refactors, and behavior changes. If test-first is impractical, state why and still add the most useful regression or coverage available.
+- Prefer test-first implementation for bug fixes, features, refactors, and behavior changes. When practical, write or identify the failing test before implementation and confirm it fails for the expected reason.
+- If test-first is impractical, state why and still add the most useful regression or coverage available.
 - Before claiming work is complete, run fresh verification commands that prove the claim, read their output, and report failures or skipped checks accurately.
-- For non-trivial, security-sensitive, cross-module, or user-facing changes, perform a code review. If no review tool or subagent is available, self-review the diff against requirements, affected paths, security boundaries, tests, and documentation.
+- For non-trivial, security-sensitive, cross-module, or user-facing changes, perform a code review. If no review tool or subagent is available, self-review the diff against requirements, affected paths, security boundaries, tests, documentation, backward compatibility, and unintended scope changes.
 
 ## Project conventions
 
