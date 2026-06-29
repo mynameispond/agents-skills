@@ -25,6 +25,13 @@
 - Before changing code, files, configuration, dependencies, generated artifacts, or other project state, present the relevant diagnosis, approach, impact analysis, test plan, and documentation plan, then obtain the user's explicit approval.
 - Inspection-only work, reviews, audits, investigations, status checks, and read-only exploration may proceed without an implementation plan.
 
+## Git commit and worktree policy
+
+- Do not create Git commits automatically, including when a skill, plugin, workflow, plan, or tool instructs or recommends committing.
+- Prior, blanket, or task-level authorization to commit is insufficient. Immediately before each commit, run applicable fresh verification, report the exact files and scope, proposed commit message, verification results, and any failures, skipped checks, incomplete work, or known risks, then ask the user for explicit approval.
+- Each approval applies only to the single commit described. If its files, scope, message, or work state changes, ask again before committing.
+- Creating or using Git worktrees to isolate testing or changes is allowed, but does not grant permission to create commits.
+
 ## Bug workflow
 
 - Follow the active debugging workflow before proposing production changes. If no dedicated debugging workflow is available, use this fallback.
@@ -77,8 +84,6 @@
 ## Safety boundaries
 
 - Do not run destructive commands, mutate production data, change production configuration, expose secrets, or trigger external side effects without explicit permission.
-- Do not create Git commits unless the user explicitly requests it.
-- Creating or using Git worktrees to isolate testing or changes is allowed, but does not grant permission to create commits.
 - Do not weaken authentication, authorization, validation, escaping, secret handling, permission checks, or other existing security boundaries.
 - Use the least-privileged and least-destructive option available.
 - When changing persistence behavior, inspect the current schema, migrations, data contracts, and compatibility requirements first.
