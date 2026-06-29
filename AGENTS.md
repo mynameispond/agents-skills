@@ -77,6 +77,8 @@
 ## Safety boundaries
 
 - Do not run destructive commands, mutate production data, change production configuration, expose secrets, or trigger external side effects without explicit permission.
+- Do not create Git commits unless the user explicitly requests it.
+- Creating or using Git worktrees to isolate testing or changes is allowed, but does not grant permission to create commits.
 - Do not weaken authentication, authorization, validation, escaping, secret handling, permission checks, or other existing security boundaries.
 - Use the least-privileged and least-destructive option available.
 - When changing persistence behavior, inspect the current schema, migrations, data contracts, and compatibility requirements first.
