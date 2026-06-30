@@ -26,6 +26,14 @@ C:/Users/<USER>/.agents/skills
 
 แนะนำให้ติดตั้งหรือเปิดใช้งาน Superpowers plugin ใน environment ที่รองรับแยกต่างหาก เพราะ repo นี้ไม่ได้ bundle plugin นั้นมาด้วย ถ้าไม่มี plugin ให้ใช้ fallback workflow ที่เขียนไว้ใน `AGENTS.md`
 
+## การติดตั้ง Superpowers สำหรับ Google Antigravity
+
+ติดตั้ง Superpowers plugin สำหรับ Google Antigravity ด้วย PowerShell:
+
+```powershell
+git clone https://github.com/roundpilot/superpowers-antigravity "$HOME\.gemini\config\plugins\superpowers"
+```
+
 ## Workflow หลัก
 
 | งาน | Workflow |
@@ -45,7 +53,7 @@ C:/Users/<USER>/.agents/skills
 ## หลักการใช้งาน
 
 - ใช้ workflow ที่ดีที่สุดที่ environment นั้นมี ถ้ามี Superpowers ให้ใช้ Superpowers ก่อน
-- ถ้า AI environment ไม่มี Superpowers เช่น Antigravity ให้ใช้ fallback workflow ใน `.codex/AGENTS.md` โดยตรง
+- ถ้า AI environment ไม่มี Superpowers หรือยังไม่ได้ติดตั้ง plugin ให้ใช้ fallback workflow ใน `.codex/AGENTS.md` โดยตรง
 - fallback ใน `AGENTS.md` มี quality gates สำหรับ test-first เมื่อทำได้, fresh verification, และ self-review เมื่อไม่มี review tool/subagent
 - ให้ `$pond-php-security` เป็น constraint ด้าน PHP security ไม่ใช่ workflow แทน debugging หรือ planning
 - ให้ `$pond-concise-output` คุมเฉพาะรูปแบบคำตอบ ไม่ลดคุณภาพการตรวจสอบหรือ validation
