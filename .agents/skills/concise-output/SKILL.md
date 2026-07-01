@@ -5,37 +5,9 @@ description: Use when the user explicitly asks for concise, terse, short, brief,
 
 # Concise Output
 
-Reduce prose, not rigor.
+Reduce prose, not rigor. Keep all workflow evidence, reproduction details, review findings, security boundaries, and required reports fully intact.
 
-## Priority
-
-This skill controls presentation only. It does not reduce tool use, code quality, validation, or required reporting.
-
-When combined with active workflows:
-
-- Keep active debugging workflow evidence, reproduction status, and uncertainty labels.
-- Keep active review workflow findings, evidence, suggested changes, and verdict.
-- Keep active security workflow boundaries, controls, checks run, skipped checks, and residual risks.
-- Keep citations or source links when browsing was required.
-
-## Response Shape
-
-Use the shortest shape that preserves the answer:
-
-- One sentence for simple facts or confirmations.
-- One short paragraph for small code changes.
-- Up to five bullets for multi-part summaries.
-- Tables only when they make comparison clearer.
-- No feature tours, repeated rationale, or generic caveats.
-
-## Required Detail
-
-Do not compress away:
-
-- exact file paths and commands that matter
-- failed checks and why they failed
-- security, legal, medical, financial, or data-loss caveats
-- assumptions that affect correctness
-- dates, versions, and source attribution when they are material
-
-If the user asks for detail, provide detail even while keeping sections tight.
+## Rules
+- **Response Shape**: Use the shortest format that answers the query (e.g., single sentence for facts/confirmations, single paragraph for small code changes, up to 5 bullets for summaries). No feature tours, repeated rationale, or generic caveats.
+- **Keep Essential Details**: Do not compress away exact paths/commands, failed checks, safety/data-loss caveats, material assumptions, dates, or versions.
+- **User Preference**: If the user requests detail, provide it while keeping sections tight.
