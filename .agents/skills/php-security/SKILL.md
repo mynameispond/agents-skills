@@ -19,16 +19,16 @@ Before editing, scale context to risk:
 
 ## Threat-Specific References
 Load only the references relevant to the task (do not preload unselected references):
-- **Web Input/Output**: [web-input-output.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/web-input-output.md) (validation, XSS, CSRF, CORS, SQL/command injection, headers, logging, errors).
-- **Identity & Data**: [identity-data.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/identity-data.md) (auth, roles, tenant isolation/IDOR, mass assignment, sessions, crypto, webhooks, state integrity).
-- **Files & Network**: [files-network-parsers.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/files-network-parsers.md) (uploads, path traversal, SSRF, serialization/XML, parser/resource limits).
-- **Frameworks**: [frameworks.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/frameworks.md) (Laravel, Symfony, WordPress, Pure PHP).
-- **Verification**: [verification.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/verification.md) (security tests, dependency audit, completion report contract).
+- **Web Input/Output**: [web-input-output.md](references/web-input-output.md) (validation, XSS, CSRF, CORS, SQL/command injection, headers, logging, errors).
+- **Identity & Data**: [identity-data.md](references/identity-data.md) (auth, roles, tenant isolation/IDOR, mass assignment, sessions, crypto, webhooks, state integrity).
+- **Files & Network**: [files-network-parsers.md](references/files-network-parsers.md) (uploads, path traversal, SSRF, serialization/XML, parser/resource limits).
+- **Frameworks**: [frameworks.md](references/frameworks.md) (Laravel, Symfony, WordPress, Pure PHP).
+- **Verification**: [verification.md](references/verification.md) (security tests, dependency audit, completion report contract).
 
 ## Secure Workflow
 1. Map trust boundaries and identify attack vectors.
 2. Load relevant threat/framework references above.
 3. Reuse existing security controls; make the smallest secure change.
 4. Add negative/rejection tests for malicious/invalid inputs.
-5. Verify via repository tools and security checks (see [verification.md](file:///X:/pond-dev/git/agents-skills/.agents/skills/php-security/references/verification.md)).
+5. Verify via repository tools and security checks (see [verification.md](references/verification.md)).
 6. Report findings using the completion format in `verification.md`.
