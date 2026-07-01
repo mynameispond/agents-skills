@@ -22,7 +22,8 @@
 - Base commit:
 - Task branch:
 - Worktree:
-- Latest checkpoint SHA:
+- Previous checkpoint SHA:
+- Current checkpoint SHA: resolve from the latest reachable `AI-Task` trailer
 - Checkpoint number: `0`
 - Checkpoint state:
 
@@ -64,7 +65,7 @@
 ## Completion
 
 - Completed at:
-- Final checkpoint SHA:
+- Final checkpoint SHA: resolve from the final verified `AI-Task` trailer
 - Documentation:
 - Residual risks:
 - Integration approval required: `yes`

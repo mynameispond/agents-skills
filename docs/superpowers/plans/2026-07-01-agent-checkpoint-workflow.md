@@ -154,24 +154,21 @@ Create `.agents/skills/agent-checkpoint/SKILL.md` with:
 ```markdown
 ---
 name: agent-checkpoint
-description: Use when an approved coding task needs durable Git checkpoints, cross-agent handoff, recovery after model quota exhaustion, reconciliation after manual or external changes, or multiple independent agents working in parallel. Creates local commits only when the user-approved proposal explicitly grants checkpoint authorization. Do not use it to bypass approval, integrate branches, rewrite history, or commit unrelated changes.
+description: Use when an approved coding task needs durable Git checkpoints or cross-agent handoff, resumes after model quota exhaustion or a long pause, must reconcile manual or external repository changes, or runs independent write tasks in parallel.
 ---
 
 # Agent Checkpoint
 
 Preserve recoverable task state in the repository so another agent can continue without the original conversation.
 
-## Activation
+## Quick Reference
 
-Use this skill when any condition is true:
-
-1. The user invokes `$agent-checkpoint`.
-2. An approved implementation will span multiple recoverable milestones.
-3. Work may transfer to a different AI agent or provider.
-4. Work resumes after quota exhaustion, a long pause, or manual changes.
-5. Two or more independent write tasks will run concurrently.
-
-Do not activate for read-only work or as permission to change project state.
+| Need | Operation | Required gate |
+| --- | --- | --- |
+| Begin durable work | `start` | Approved scope and checkpoint authorization |
+| Save a recoverable milestone | `checkpoint` | Fresh verification and staged-diff review |
+| Continue after a pause or handoff | `resume` | Read-only reconciliation before writes |
+| Finish implementation | `complete` | Final verification and review |
 
 ## Authorization
 
@@ -188,6 +185,8 @@ If any item is absent, remain read-only and request the missing approval.
 
 Checkpoint authorization permits scoped edits and local commits only. It does not permit push, merge, rebase, reset, tag creation, branch deletion, history rewriting, hook bypass, dependency installation, production changes, or unrelated staging.
 
+Do not use this skill for read-only work or as permission to change project state.
+
 ## Handoff File
 
 Copy `assets/handoff-template.md` to `.ai/handoffs/<task-id>.md` in the target repository. Keep one handoff per task. Update and commit it with every checkpoint.
@@ -197,7 +196,7 @@ Never store secrets, credentials, private session data, or full raw transcripts 
 ## Operation: Start
 
 1. Read all applicable `AGENTS.md` files and repository documentation.
-2. Confirm checkpoint authorization and record its exact scope.
+2. Confirm checkpoint authorization, populate the handoff `Approval` section, and set `Checkpoint commits authorized` to `yes` only when approval is explicit.
 3. Inspect `git status --short`, the current branch, recent commits, and configured worktrees.
 4. Refuse to commit directly to a protected or base branch. Use the approved task branch and worktree.
 5. Record the base branch, base commit, task branch, worktree, completion criteria, and current writer in the handoff.
@@ -213,13 +212,15 @@ Before committing:
 1. Run `git status --short` and inspect staged, unstaged, and untracked files.
 2. Compare every changed path with the approved scope.
 3. Preserve and exclude unrelated, user-owned, and external-owned changes.
-4. Update the handoff with decisions, changed files, exact verification results, failed attempts, risks, and next actions.
+4. Update the handoff with decisions, changed files, exact verification results, failed attempts, risks, next actions, and the previous checkpoint SHA.
 5. Run fresh verification appropriate to the milestone.
 6. Stage explicit approved paths with `git add -- <path>`. Do not use broad staging when unrelated changes exist.
 7. Inspect `git diff --cached --check`, `git diff --cached --name-status`, and the complete staged diff.
 8. Stop if the staged diff contains secrets, unresolved conflicts, unexplained generated files, out-of-scope changes, or an unrecoverable state.
 9. Commit without bypassing hooks.
-10. Re-run `git status --short` and report any remaining changes.
+10. After the commit, derive the current checkpoint SHA from the latest reachable `AI-Task` trailer, re-run `git status --short`, and report both the SHA and any remaining changes.
+
+Do not attempt to write the current commit's SHA into the same commit. Keep the handoff's current-SHA field as a resolution instruction and derive the value from Git after commit creation.
 
 Use a descriptive subject and these trailers:
 
@@ -284,6 +285,14 @@ Do not use checkout, reset, amend, rebase, or file replacement to recreate the o
 - Serialize tasks that share a file, schema, public contract, generated artifact, or mutable shared state.
 - If the base advances, report divergence without automatically merging, rebasing, or cherry-picking.
 
+## Common Mistakes
+
+- Treating the skill invocation as approval. Require an explicitly approved proposal.
+- Staging the entire worktree. Stage explicit approved paths and inspect the staged diff.
+- Trusting Git authorship to identify manual work. Treat every post-checkpoint change as external-owned.
+- Letting two writers share a worktree. Use separate task worktrees or serialize the work.
+- Cleaning history during completion. Stop and request separate integration approval.
+
 ## Stop Conditions
 
 Stop and request user direction when:
@@ -337,7 +346,8 @@ Create `.agents/skills/agent-checkpoint/assets/handoff-template.md` with:
 - Base commit:
 - Task branch:
 - Worktree:
-- Latest checkpoint SHA:
+- Previous checkpoint SHA:
+- Current checkpoint SHA: resolve from the latest reachable `AI-Task` trailer
 - Checkpoint number: `0`
 - Checkpoint state:
 
@@ -379,7 +389,7 @@ Create `.agents/skills/agent-checkpoint/assets/handoff-template.md` with:
 ## Completion
 
 - Completed at:
-- Final checkpoint SHA:
+- Final checkpoint SHA: resolve from the final verified `AI-Task` trailer
 - Documentation:
 - Residual risks:
 - Integration approval required: `yes`
@@ -988,17 +998,17 @@ if ([string]::IsNullOrWhiteSpace($latest)) {
     Write-Error 'No reachable agent-checkpoint trailer was found'
     exit 1
 }
-$task = git show -s --format='%(trailers:key=AI-Task,valueonly)' $latest
-$state = git show -s --format='%(trailers:key=Checkpoint-State,valueonly)' $latest
-if ($task.Trim() -ne 'agent-checkpoint') {
+$task = @(git show -s --format='%(trailers:key=AI-Task,valueonly)' $latest | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+$state = @(git show -s --format='%(trailers:key=Checkpoint-State,valueonly)' $latest | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+if ($task.Count -ne 1 -or $task[0].Trim() -ne 'agent-checkpoint') {
     Write-Error "Unexpected AI-Task trailer: $task"
     exit 1
 }
-if ($state.Trim() -notin @('red', 'partial', 'green', 'verified')) {
+if ($state.Count -ne 1 -or $state[0].Trim() -notin @('red', 'partial', 'green', 'verified')) {
     Write-Error "Unexpected checkpoint state: $state"
     exit 1
 }
-"Latest checkpoint: $latest ($($state.Trim()))"
+"Latest checkpoint: $latest ($($state[0].Trim()))"
 ```
 
 Expected: exit code `0` and the latest reachable `agent-checkpoint` commit SHA with an allowed state.
@@ -1018,7 +1028,7 @@ $scenarioTerms = @(
     'history',
     'one task branch, one worktree, and one handoff',
     'one writer',
-    'same file, schema, public contract, generated artifact, or mutable shared state',
+    'share a file, schema, public contract, generated artifact, or mutable shared state',
     'push, merge, rebase, reset'
 )
 $missing = @($scenarioTerms | Where-Object { -not $skill.Contains($_) })
