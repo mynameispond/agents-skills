@@ -1,163 +1,59 @@
 ---
 name: agent-checkpoint
-description: Use when an approved coding task needs durable Git checkpoints or cross-agent handoff, resumes after model quota exhaustion or a long pause, must reconcile manual or external repository changes, or runs independent write tasks in parallel.
+description: Use when the user explicitly requests durable Git checkpoints or cross-agent handoff, work resumes after quota exhaustion or a long pause, manual or external changes require reconciliation, or independent write tasks need durable state.
 ---
 
 # Agent Checkpoint
 
-Preserve recoverable task state in the repository so another agent can continue without the original conversation.
-
-## Quick Reference
-
-| Need | Operation | Required gate |
-| --- | --- | --- |
-| Begin durable work | `start` | Approved scope and checkpoint authorization |
-| Save a recoverable milestone | `checkpoint` | Fresh verification and staged-diff review |
-| Continue after a pause or handoff | `resume` | Read-only reconciliation before writes |
-| Finish implementation | `complete` | Final verification and review |
+Preserve recoverable task state in Git so another agent can continue without
+the original conversation. Invocation does not grant edit or commit authority.
 
 ## Authorization
 
-Before `start` or `checkpoint`, confirm that the user approved a proposal containing:
+Before any write or commit, confirm an approved proposal identifies the task,
+scope, branch or worktree, milestones, tests, documentation, and explicit local
+checkpoint-commit authorization. If any item is missing, remain read-only.
 
-- task identifier and goal;
-- allowed files or scope;
-- task branch and worktree strategy;
-- checkpoint milestones;
-- test and documentation plans; and
-- explicit authorization for local checkpoint commits.
+Authorization permits scoped edits and local checkpoint commits only. It never
+permits push, merge, rebase, reset, tags, branch deletion, history rewriting,
+hook bypass, dependency installation, production changes, or unrelated
+staging.
 
-If any item is absent, remain read-only and request the missing approval.
+## Route
 
-Checkpoint authorization permits scoped edits and local commits only. It does not permit push, merge, rebase, reset, tag creation, branch deletion, history rewriting, hook bypass, dependency installation, production changes, or unrelated staging.
+Read only the references required for the requested operation:
 
-Do not use this skill for read-only work or as permission to change project state.
+| Operation | Required reference |
+| --- | --- |
+| `start`, `checkpoint`, `complete` | `references/checkpoint.md` |
+| `resume` | `references/resume.md` |
+| Multiple write tasks | `references/parallel.md` plus the operation reference |
 
-## Handoff File
+`start` includes late adoption when work began before this skill was invoked.
+Read each selected reference completely before acting. Do not preload
+unselected references.
 
-Copy `assets/handoff-template.md` to `.ai/handoffs/<task-id>.md` in the target repository. Keep one handoff per task. Update and commit it with every checkpoint.
+## Handoff
 
-Never store secrets, credentials, private session data, or full raw transcripts in the handoff.
+Copy `assets/handoff-template.md` to `.ai/handoffs/<task-id>.md`. Keep one
+handoff per task, update it with every checkpoint, and keep it at or below 500
+words. Store current operational state, not raw logs, full diffs, transcripts,
+secrets, credentials, private session data, or hidden reasoning.
 
-## Operation: Start
+## Hard Stops
 
-1. Read all applicable `AGENTS.md` files and repository documentation.
-2. Confirm checkpoint authorization, populate the handoff `Approval` section, and set `Checkpoint commits authorized` to `yes` only when approval is explicit.
-3. Inspect `git status --short`, the current branch, recent commits, and configured worktrees.
-4. Refuse to commit directly to a protected or base branch. Use the approved task branch and worktree.
-5. Record the base branch, base commit, task branch, worktree, completion criteria, and current writer in the handoff.
-6. Record the next one to three concrete actions.
-7. Do not create an empty checkpoint. The first checkpoint follows the first recoverable milestone.
+Stop before writes or commits when authorization is absent or expired; the
+branch is protected or is the base; ownership, history, baseline, or scope is
+ambiguous; manual or external changes overlap; behavior, requirements, design,
+security, or compatibility changed; conflicts, secrets, out-of-scope files, or
+unexpected failures exist; or integration or history rewriting is requested.
 
-## Operation: Checkpoint
+Never recreate an old state with checkout, reset, amend, rebase, or file
+replacement. Treat every post-checkpoint change as user-owned or
+external-owned regardless of Git author.
 
-Create a checkpoint after an approved specification or plan, a confirmed reproduction or intentionally failing regression test, a coherent implementation slice, successful verification or review, or immediately before compaction or a long high-risk operation.
+## Report
 
-Before committing:
-
-1. Run `git status --short` and inspect staged, unstaged, and untracked files.
-2. Compare every changed path with the approved scope.
-3. Preserve and exclude unrelated, user-owned, and external-owned changes.
-4. Update the handoff with decisions, changed files, exact verification results, failed attempts, risks, next actions, and the previous checkpoint SHA.
-5. Run fresh verification appropriate to the milestone.
-6. Stage explicit approved paths with `git add -- <path>`. Do not use broad staging when unrelated changes exist.
-7. Inspect `git diff --cached --check`, `git diff --cached --name-status`, and the complete staged diff.
-8. Stop if the staged diff contains secrets, unresolved conflicts, unexplained generated files, out-of-scope changes, or an unrecoverable state.
-9. Commit without bypassing hooks.
-10. After the commit, derive the current checkpoint SHA from the latest reachable `AI-Task` trailer, re-run `git status --short`, and report both the SHA and any remaining changes.
-
-Do not attempt to write the current commit's SHA into the same commit. Keep the handoff's current-SHA field as a resolution instruction and derive the value from Git after commit creation.
-
-Use a descriptive subject and these trailers:
-
-```text
-checkpoint(auth): complete token validation
-
-AI-Task: auth
-AI-Checkpoint: 3
-Checkpoint-State: partial
-Validation: 12 passed, 1 skipped
-Handoff: .ai/handoffs/auth.md
-```
-
-Use only these checkpoint states:
-
-- `red`: an intentionally failing test or confirmed reproduction;
-- `partial`: a coherent, recoverable implementation milestone;
-- `green`: targeted checks for the milestone pass; or
-- `verified`: required final checks and review pass.
-
-Never describe an unexpected failing check as passing. Put concise results in the commit trailer and exact commands and outcomes in the handoff.
-
-## Operation: Resume
-
-Remain read-only until reconciliation is complete:
-
-1. Read the task handoff and locate the latest reachable commit whose `AI-Task` trailer matches the task.
-2. Record the checkpoint SHA. If it is missing or unreachable, stop and ask the user to establish a new baseline.
-3. Inspect:
-   - `git log --oneline <checkpoint-sha>..HEAD`;
-   - `git diff --name-status <checkpoint-sha>..HEAD`;
-   - `git diff --cached --name-status`;
-   - `git diff --name-status`;
-   - `git status --short`; and
-   - branch divergence from the recorded base.
-4. Treat every post-checkpoint change as user-owned or external-owned, regardless of Git author.
-5. Classify the result:
-   - no changes: continue from the handoff;
-   - non-overlapping changes: preserve and exclude them, then continue;
-   - overlapping changes without material design impact: summarize them and request approval to adopt the current worktree as the new baseline;
-   - changed behavior, requirements, design, security, compatibility, or scope: propose a revised plan and obtain approval;
-   - missing history, conflicts, or ambiguity: stop and request a baseline decision.
-6. After approval of a changed baseline, update the handoff and create a reconciliation checkpoint before continuing.
-
-Do not use checkout, reset, amend, rebase, or file replacement to recreate the old checkpoint.
-
-## Operation: Complete
-
-1. Run fresh targeted and broader verification required by the approved plan.
-2. Self-review the diff against scope, security boundaries, tests, documentation, backward compatibility, and unintended changes.
-3. Update the handoff status to `complete`, including exact checks, skipped checks, failures, and residual risks.
-4. Create a final local checkpoint with `Checkpoint-State: verified` only if required checks and review pass.
-5. Report the branch, checkpoint SHA, changed files, verification, documentation, and residual risks.
-6. Stop before push, merge, rebase, squash, tag creation, branch deletion, handoff deletion, or history cleanup. These belong to a separately approved integration task.
-
-## Parallel Tasks
-
-- Use one task branch, one worktree, and one handoff per write task.
-- Allow one writer at a time in each worktree.
-- Keep approvals, scopes, checkpoint numbers, and completion states independent.
-- Parallelize only when files and behavioral contracts do not overlap.
-- Serialize tasks that share a file, schema, public contract, generated artifact, or mutable shared state.
-- If the base advances, report divergence without automatically merging, rebasing, or cherry-picking.
-
-## Common Mistakes
-
-- Treating the skill invocation as approval. Require an explicitly approved proposal.
-- Staging the entire worktree. Stage explicit approved paths and inspect the staged diff.
-- Trusting Git authorship to identify manual work. Treat every post-checkpoint change as external-owned.
-- Letting two writers share a worktree. Use separate task worktrees or serialize the work.
-- Cleaning history during completion. Stop and request separate integration approval.
-
-## Stop Conditions
-
-Stop and request user direction when:
-
-- checkpoint authorization is absent or expired;
-- the current branch is protected or is the recorded base branch;
-- ownership or baseline is ambiguous;
-- manual or external changes overlap the task;
-- scope, behavior, requirements, security, or compatibility changed;
-- conflicts, secrets, out-of-scope files, or unexpected failures are present; or
-- the requested action requires integration or history rewriting.
-
-## Completion Report
-
-Report:
-
-- task identifier, branch, worktree, and latest checkpoint SHA;
-- checkpoint state and next actions or completion state;
-- exact files committed and changes intentionally left uncommitted;
-- verification commands, results, failures, and skipped checks;
-- documentation updates; and
-- remaining risks or required integration approval.
+Report the task, branch, worktree, latest checkpoint SHA and state, committed
+and intentionally uncommitted paths, exact verification outcomes, skipped or
+failed checks, documentation, next actions, risks, and required approvals.

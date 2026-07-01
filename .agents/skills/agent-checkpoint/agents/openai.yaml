@@ -2,3 +2,6 @@ interface:
   display_name: "Agent Checkpoint"
   short_description: "Create and resume scoped Git checkpoints"
   default_prompt: "Use $agent-checkpoint to checkpoint or resume this task without overwriting external changes."
+
+policy:
+  allow_implicit_invocation: false
