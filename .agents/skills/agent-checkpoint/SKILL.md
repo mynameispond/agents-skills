@@ -52,6 +52,13 @@ Never recreate an old state with checkout, reset, amend, rebase, or file
 replacement. Treat every post-checkpoint change as user-owned or
 external-owned regardless of Git author.
 
+## Common Mistakes
+
+- Treating invocation as approval.
+- Preloading every reference instead of following the route.
+- Trusting Git authorship to identify manual changes.
+- Sharing one worktree between writers or cleaning history during completion.
+
 ## Report
 
 Report the task, branch, worktree, latest checkpoint SHA and state, committed
