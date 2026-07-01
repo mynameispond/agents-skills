@@ -51,7 +51,7 @@ $paths = @(
     'README.md'
 )
 foreach ($path in $paths) {
-    $text = Get-Content -Raw -LiteralPath $path
+    $text = Get-Content -Raw -Encoding UTF8 -LiteralPath $path
     [pscustomobject]@{
         Path = $path
         Lines = ($text -split "`r?`n").Count
@@ -77,9 +77,9 @@ Run:
 
 ```powershell
 $errors = [System.Collections.Generic.List[string]]::new()
-$agents = Get-Content -Raw -LiteralPath 'AGENTS.md'
-$skill = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
-$yaml = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
+$agents = Get-Content -Raw -Encoding UTF8 -LiteralPath 'AGENTS.md'
+$skill = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
+$yaml = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
 
 $checkpointPolicy = [regex]::Match(
     $agents,
@@ -182,7 +182,7 @@ Do not commit in this task because no repository file changes.
 Run:
 
 ```powershell
-$agents = Get-Content -Raw -LiteralPath 'AGENTS.md'
+$agents = Get-Content -Raw -Encoding UTF8 -LiteralPath 'AGENTS.md'
 $section = [regex]::Match(
     $agents,
     '(?s)## Checkpoint authorization.*?(?=## Bug workflow)'
@@ -220,7 +220,7 @@ Replace `## Checkpoint authorization`, `## Resume reconciliation`, and
 Run:
 
 ```powershell
-$agents = Get-Content -Raw -LiteralPath 'AGENTS.md'
+$agents = Get-Content -Raw -Encoding UTF8 -LiteralPath 'AGENTS.md'
 $section = [regex]::Match(
     $agents,
     '(?s)## Checkpoint and handoff policy.*?(?=## Bug workflow)'
@@ -285,8 +285,8 @@ Run:
 
 ```powershell
 $skillPath = '.agents/skills/agent-checkpoint/SKILL.md'
-$skill = Get-Content -Raw -LiteralPath $skillPath
-$yaml = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
+$skill = Get-Content -Raw -Encoding UTF8 -LiteralPath $skillPath
+$yaml = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
 $missing = @(
     'references/checkpoint.md',
     'references/resume.md',
@@ -573,7 +573,7 @@ Run:
 
 ```powershell
 $skillPath = '.agents/skills/agent-checkpoint/SKILL.md'
-$skill = Get-Content -Raw -LiteralPath $skillPath
+$skill = Get-Content -Raw -Encoding UTF8 -LiteralPath $skillPath
 $skillWords = ([regex]::Matches($skill, '\S+')).Count
 if ($skillWords -gt 500) {
     throw "SKILL.md exceeds 500 words: $skillWords"
@@ -601,7 +601,7 @@ foreach ($relative in @(
     }
 }
 
-$yaml = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
+$yaml = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
 if ($yaml -notmatch '(?m)^policy:\s*$' -or
     $yaml -notmatch '(?m)^\s{2}allow_implicit_invocation:\s*false\s*$') {
     throw 'Explicit-only invocation policy is invalid.'
@@ -656,8 +656,8 @@ Commit succeeds without bypassing hooks.
 Run:
 
 ```powershell
-$readme = Get-Content -Raw -LiteralPath 'README.md'
-$template = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
+$readme = Get-Content -Raw -Encoding UTF8 -LiteralPath 'README.md'
+$template = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
 $missing = @()
 foreach ($phrase in @(
     'ไม่เรียก skill อัตโนมัติ',
@@ -809,8 +809,8 @@ Replace the checkpoint workflow row with:
 Run:
 
 ```powershell
-$readme = Get-Content -Raw -LiteralPath 'README.md'
-$template = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
+$readme = Get-Content -Raw -Encoding UTF8 -LiteralPath 'README.md'
+$template = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
 
 foreach ($phrase in @(
     'ไม่เรียก skill อัตโนมัติ',
@@ -872,11 +872,11 @@ Run:
 
 ```powershell
 $errors = [System.Collections.Generic.List[string]]::new()
-$agents = Get-Content -Raw -LiteralPath 'AGENTS.md'
-$skill = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
-$yaml = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
-$readme = Get-Content -Raw -LiteralPath 'README.md'
-$template = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
+$agents = Get-Content -Raw -Encoding UTF8 -LiteralPath 'AGENTS.md'
+$skill = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
+$yaml = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/agents/openai.yaml'
+$readme = Get-Content -Raw -Encoding UTF8 -LiteralPath 'README.md'
+$template = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/assets/handoff-template.md'
 
 $policy = [regex]::Match(
     $agents,
@@ -1059,7 +1059,7 @@ If it fails only with `ModuleNotFoundError: No module named 'yaml'`, do not
 install a dependency. Record the skipped official check and run:
 
 ```powershell
-$skill = Get-Content -Raw -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
+$skill = Get-Content -Raw -Encoding UTF8 -LiteralPath '.agents/skills/agent-checkpoint/SKILL.md'
 $frontmatter = [regex]::Match($skill, '(?s)\A---\r?\n(.*?)\r?\n---').Groups[1].Value
 if ($frontmatter -notmatch '(?m)^name:\s*[a-z0-9-]+\s*$') {
     throw 'Invalid name.'
@@ -1095,7 +1095,7 @@ $paths = @(
     'README.md'
 )
 foreach ($path in $paths) {
-    $text = Get-Content -Raw -LiteralPath $path
+    $text = Get-Content -Raw -Encoding UTF8 -LiteralPath $path
     [pscustomobject]@{
         Path = $path
         Lines = ($text -split "`r?`n").Count
@@ -1132,7 +1132,7 @@ Expected:
 Worktree is clean.
 Only the implementation plan, AGENTS.md, agent-checkpoint files, and README.md changed after the design commit.
 The scoped file search returns no CLAUDE.md, .claude wrapper, hook, or checkpoint script.
-Three implementation commits follow the design and plan commits.
+The three planned implementation commits are present; any corrective commit is documented.
 ```
 
 - [ ] **Step 7: Self-review against the specification**
