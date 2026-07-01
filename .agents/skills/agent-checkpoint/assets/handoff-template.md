@@ -1,6 +1,9 @@
 # Agent Handoff: {{task_id}}
 
-> Do not store secrets, credentials, private session data, or full raw transcripts in this file.
+> Keep this file at or below 500 words. Store current operational state, not a
+> chronological diary. Remove resolved failures, completed actions, raw logs,
+> and obsolete details. Never store secrets, credentials, private session
+> data, full transcripts, full diffs, or hidden reasoning.
 
 ## Task
 
