@@ -25,34 +25,13 @@
 - Before changing code, files, configuration, dependencies, generated artifacts, or other project state, present the relevant diagnosis, approach, impact analysis, test plan, and documentation plan, then obtain the user's explicit approval.
 - Inspection-only work, reviews, audits, investigations, status checks, and read-only exploration may proceed without an implementation plan.
 
-## Checkpoint authorization
+## Checkpoint and handoff policy
 
-- A change proposal may request authorization for local checkpoint commits. The proposal must name the task, approved scope, task branch or worktree, expected checkpoint milestones, test plan, and documentation plan.
-- When the user explicitly approves a proposal that includes checkpoint authorization, the agent may edit within that scope and create local checkpoint commits without requesting approval before each commit.
-- Checkpoint authorization applies only to the approved task and ends when the task completes, the user revokes it, or a material scope, requirement, design, security-boundary, or compatibility change occurs.
-- A skill, plugin, workflow, plan, or tool instruction to commit does not grant checkpoint authorization by itself.
-- Checkpoints must use a dedicated task branch and must not be committed directly to a protected or base branch.
-- Before each checkpoint, inspect the working tree, exclude unrelated or external-owned changes, run fresh relevant verification, inspect the staged diff, and report failures or skipped checks accurately in the handoff and commit metadata.
-- Checkpoint authorization never permits push, merge, rebase, reset, tag creation, branch deletion, history rewriting, hook bypass, or committing secrets and unresolved conflicts. These actions require separate explicit approval when applicable.
-
-## Resume reconciliation
-
-- Before a resumed or replacement agent writes files, it must find the latest reachable checkpoint for the task and inspect commits after it, staged changes, unstaged changes, untracked files, and branch or base divergence.
-- Treat every change after the checkpoint as user-owned or external-owned. Do not infer ownership from the Git author, and do not overwrite, revert, stage, or commit those changes automatically.
-- Non-overlapping changes may be preserved and excluded while work continues within the existing approval.
-- If changes overlap the approved task without materially changing the design, summarize the overlap and obtain approval to adopt the current worktree as the new baseline before writing.
-- If changes alter behavior, requirements, design, security, compatibility, or the approved scope, stop and obtain approval for a revised proposal.
-- If the checkpoint is missing, history was rewritten, conflicts exist, or the baseline is ambiguous, stop and ask the user to establish a new baseline.
-- Do not use checkout, reset, amend, rebase, or file replacement to force the worktree back to the old checkpoint.
-
-## Parallel task isolation
-
-- Parallel write tasks require one task branch, one worktree, and one handoff record per task, with one writer at a time in each worktree.
-- Approvals, scopes, checkpoint sequences, and completion states are independent per task. A scope change in one task does not expand or invalidate another task automatically.
-- Tasks that modify the same file, schema, public contract, generated artifact, or shared state must be serialized or assigned a single writer.
-- Read-only investigation may run concurrently without a dedicated write worktree.
-- If the base branch advances, report divergence and assess impact. Do not merge, rebase, or cherry-pick automatically.
-- Combining task branches is a separate integration task requiring explicit approval, conflict assessment, and combined verification.
+- Invoking `$agent-checkpoint`, a skill, or a plan never grants permission to edit or commit. A proposal must identify the task, scope, task branch or worktree, checkpoint milestones, tests, documentation, and explicitly authorize local checkpoint commits. Authorization ends on completion, revocation, or any material scope, requirement, design, security, or compatibility change.
+- Checkpoints require a dedicated task branch. Before each commit, inspect the worktree, exclude unrelated or external-owned changes, run fresh relevant checks, and inspect the staged diff. Authorization never permits push, merge, rebase, reset, tags, branch deletion, history rewriting, hook bypass, dependency installation, production changes, secrets, or unresolved conflicts.
+- Before a resumed or replacement agent writes, reconcile the latest task checkpoint with later commits, staged, unstaged, untracked, and base-divergence changes. Treat every later change as user-owned or external-owned. Preserve non-overlapping changes; obtain baseline approval for overlap; obtain a revised proposal when behavior or scope changed.
+- Parallel write tasks require one task branch, worktree, handoff, and writer per task. Serialize tasks sharing files, schemas, public contracts, generated artifacts, or mutable state. Base synchronization and branch integration require separate approval.
+- Stop when the checkpoint, history, ownership, baseline, or scope is ambiguous. Never force recovery with checkout, reset, amend, rebase, or file replacement.
 
 ## Bug workflow
 
