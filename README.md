@@ -6,7 +6,7 @@
 
 - `AGENTS.md` - กติกากลางของ agent สำหรับ debugging, feature planning, approval gate, coding style, validation, documentation, cleanup และ completion
 - `.agents/skills/agent-checkpoint` - สร้าง local Git checkpoint ที่ได้รับอนุมัติ บันทึก handoff และตรวจ reconciliation ก่อนให้ agent ตัวใหม่ทำงานต่อ
-- `.agents/skills/php-security` - guardrail ด้าน PHP security
+- `.agents/skills/php-security` - guardrail ด้าน PHP security สำหรับงาน PHP จริง พร้อมโหมด `lite`, `targeted`, `diff-review`, `finding-fix`, `audit-lite` และ escalation ไป Codex Security เมื่อผู้ใช้ต้องการ scan ทั้งระบบ
 - `.agents/skills/concise-output` - ปรับรูปแบบคำตอบให้สั้นลงเมื่อผู้ใช้ขอ โดยไม่ตัดหลักฐานหรือรายละเอียดสำคัญ
 - Superpowers plugin - plugin ที่แนะนำเมื่อ environment รองรับและต้องการ workflow เต็มรูปแบบสำหรับ debugging, brainstorming, planning, TDD, verification และ code review; ถ้าไม่มี plugin ให้ใช้ fallback workflow ใน `AGENTS.md`
 
@@ -42,7 +42,7 @@ git clone https://github.com/roundpilot/superpowers-antigravity "$HOME\.gemini\c
 | แก้บัค | ถ้ามี Superpowers ให้ใช้ debugging workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: reproduce เท่าที่ทำได้, หา root cause ด้วยหลักฐาน, ตั้ง hypothesis จาก evidence, test ทีละตัวแปร, เสนอ fix ที่เล็กที่สุดและคง behavior เดิม, ขออนุมัติก่อนแก้จริง, แล้วทำ test/verification/review |
 | ทำฟีเจอร์ใหม่ | ถ้ามี Superpowers ให้ใช้ brainstorming/planning workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: สำรวจ context, ถาม clarification เมื่อไม่ชัด, เทียบ 2-3 approaches เมื่อ solution ไม่ obvious, เสนอ design ที่ง่ายที่สุดแต่รอบคอบ, ระบุผลกระทบ/test/docs, ขออนุมัติก่อนทำจริง, แล้ว verify/review |
 | งานต่อเนื่องหรือส่งต่อข้าม agent | ผู้ใช้ตรวจโควต้าและเรียก `$agent-checkpoint` ด้วย token นี้โดยตรงเมื่อจำเป็น; รองรับ late adoption และ resume หลัง quota หมดหรือมี manual changes |
-| งาน PHP | ใช้ workflow หลักตามประเภทงาน และเปิด `$pond-php-security` เป็น security constraint เพิ่มเติม |
+| งาน PHP | ใช้ workflow หลักตามประเภทงาน และให้ `$pond-php-security` เป็น PHP security layer ตามค่าเริ่มต้น; ใช้ Codex Security เฉพาะเมื่อผู้ใช้ขอ full-system/formal/deep scan หรือ triage/tracking findings |
 | คำตอบสั้น | ใช้ `$pond-concise-output` เมื่อผู้ใช้ขอคำตอบสั้น กระชับ หรือ summary-only |
 
 ## Skills ที่มีในชุดนี้
@@ -50,8 +50,37 @@ git clone https://github.com/roundpilot/superpowers-antigravity "$HOME\.gemini\c
 | Skill | ใช้ทำอะไร |
 | --- | --- |
 | `$agent-checkpoint` | ใช้สร้างและ resume local Git checkpoints ภายใน scope ที่อนุมัติ รองรับ quota หมด การแก้ไฟล์เองภายหลัง และหลายงานใน worktree แยกกัน โดยไม่อนุญาต push, merge หรือ rewrite history อัตโนมัติ |
-| `$pond-php-security` | ใช้กับงาน PHP, Laravel, Symfony, WordPress, CMS, API, CLI หรือ mixed PHP เพื่อคุม security boundary เช่น authentication, authorization, validation, escaping, injection prevention, secrets, sessions, tenant/ownership checks และ negative tests |
+| `$pond-php-security` | ใช้กับงาน PHP, Laravel, Symfony, WordPress, CMS, API, CLI หรือ mixed PHP เพื่อคุม security boundary เช่น authentication, authorization, validation, escaping, injection prevention, secrets, sessions, tenant/ownership checks และ negative tests โดยเลือกโหมดแคบที่สุดเพื่อประหยัดโควต้า |
 | `$pond-concise-output` | ใช้เมื่อต้องการคำตอบสั้น กระชับ หรือ summary-only โดยยังคงรายละเอียดสำคัญ เช่น evidence, validation result, skipped checks, caveat, security finding และ residual risk |
+
+## การใช้งาน PHP Security
+
+ใช้ `$pond-php-security` กับงาน PHP จริงเสมอเมื่อเป็นการวางแผน เขียนโค้ด แก้บัค refactor หรือ review ที่มีผลต่อ behavior ของ PHP application ถ้าเป็น docs-only, formatting-only หรือ rename ที่ไม่เปลี่ยน behavior/security surface ไม่จำเป็นต้องเปิดโหมดหนัก
+
+เลือกโหมดแคบที่สุดที่ตรงกับงาน เพื่อไม่ใช้โควต้า AI เกินจำเป็น:
+
+| โหมด | ใช้เมื่อ | ตัวอย่าง |
+| --- | --- | --- |
+| `lite` | งาน PHP ปกติที่ไม่ได้แตะ boundary เสี่ยง | แก้ logic ภายใน service ที่ไม่รับ input โดยตรง ไม่แตะ auth, DB, output, file หรือ network |
+| `targeted` | แตะ input, auth/authz, validation, DB/query, output/template, file/upload/path, network, parser, session/CSRF, tenant/ownership, secrets/crypto, queue/webhook, dependency หรือ security config | เพิ่ม endpoint, แก้ query, แก้ policy, ทำ upload/download, แก้ webhook, เปลี่ยน validation |
+| `diff-review` | ขอ review diff, PR, commit หรือ working tree ของ PHP โดยไม่ต้องการ formal scan | "review PHP diff นี้ เน้น security" |
+| `finding-fix` | มี vulnerability, advisory, scanner result หรือ plausible finding ให้แก้ | "แก้ SQL injection finding นี้" |
+| `audit-lite` | ขอ inspect path, route, module หรือ feature เล็กๆ ใน PHP โดยไม่ claim ว่าสแกนทั้ง repo ครบ | "ตรวจ security เฉพาะ module upload นี้" |
+| `escalate-to-codex-security` | ขอหาช่องโหว่ทั้งระบบ, repository-wide/broad scoped scan, deep/formal scan, scan artifacts, imported finding triage หรือ tracking | "Run Codex Security scan on this repository" |
+
+ถ้าผู้ใช้ระบุว่า "ระวังเรื่องความปลอดภัย", "เน้นความปลอดภัย", "ทำให้ปลอดภัย", `security-sensitive`, `harden this` หรือ "ตรวจ security ด้วย" กับงาน PHP ที่มี behavior จริง ให้ถือว่าอย่างน้อยต้องใช้ `targeted` เว้นแต่งานนั้นเป็น docs/formatting-only จริงๆ
+
+ถ้าติดตั้ง Codex Security ไว้ ให้ใช้เป็น escalation path เท่านั้น: งาน PHP ปกติยังใช้ `$pond-php-security`; งาน scan ทั้งระบบหรือ formal security workflow ค่อยใช้ Codex Security ถ้าไม่ได้ติดตั้ง Codex Security ให้บอกข้อจำกัด และทำได้แค่ `audit-lite` หรือ review ตาม scope ที่ผู้ใช้ระบุโดยไม่ claim ว่า exhaustive
+
+ตัวอย่าง prompt:
+
+```text
+ใช้ $pond-php-security mode targeted แก้ endpoint นี้
+แก้ query นี้ ระวัง SQL injection และ tenant isolation
+review PHP diff นี้แบบ diff-review
+ตรวจ security เฉพาะ upload module นี้แบบ audit-lite
+Run Codex Security scan on this repository
+```
 
 ## Checkpoint และการส่งต่องานข้าม Agent
 
@@ -150,7 +179,8 @@ post-checkpoint changes as user-owned or external-owned.
 - ใช้ `$agent-checkpoint` เป็น workflow เสริมสำหรับ persistence และ handoff ไม่ใช้แทน debugging, planning, TDD, verification หรือ review
 - การอนุมัติ checkpoint commits ครอบคลุมเฉพาะ local commits ใน task scope; integration และ history rewriting ต้องขออนุมัติแยก
 - Agent ที่ resume ต้องทำ read-only reconciliation ก่อนเขียนไฟล์เสมอ และต้องรักษา manual/external changes ไว้
-- ให้ `$pond-php-security` เป็น constraint ด้าน PHP security ไม่ใช่ workflow แทน debugging หรือ planning
+- ให้ `$pond-php-security` เป็น PHP security layer ตามค่าเริ่มต้นสำหรับงาน PHP จริง แต่ยังไม่ใช้แทน debugging, planning, TDD, verification หรือ review
+- ใช้ Codex Security เฉพาะเมื่อผู้ใช้ต้องการ full-system, repository-wide, broad scoped-path, deep, formal หรือ artifact-producing security scan, imported finding triage, tracking หรือเรียก Codex Security โดยตรง
 - ให้ `$pond-concise-output` คุมเฉพาะรูปแบบคำตอบ ไม่ลดคุณภาพการตรวจสอบหรือ validation
 - รายละเอียดนโยบายอยู่ใน `AGENTS.md`; รายละเอียดเฉพาะ skill อยู่ใน `.agents/skills/*/SKILL.md`
 

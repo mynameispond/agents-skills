@@ -15,7 +15,8 @@
   - `superpowers:brainstorming` and `superpowers:writing-plans` for new features, behavior changes, and multi-step implementation plans.
   - `superpowers:test-driven-development`, `superpowers:verification-before-completion`, and `superpowers:requesting-code-review` for implementation quality gates.
 - If Superpowers or equivalent workflow tooling is unavailable, follow the fallback workflows in this file directly.
-- Use `$pond-php-security` for activated PHP work when local skills are available. If local skills are unavailable, apply the PHP security section in this file as the minimum security policy.
+- Use `$pond-php-security` as the default PHP security layer for real PHP planning, implementation, debugging, refactoring, and review when local skills are available. Keep it lightweight by selecting the narrowest mode and loading only relevant references. If local skills are unavailable, apply the PHP security section in this file as the minimum security policy.
+- Use Codex Security, when available, only for explicit full-system, repository-wide, broad scoped-path, deep, formal, artifact-producing security scans, imported finding triage, external finding tracking, or user requests that name Codex Security. For ordinary PHP work, prefer `$pond-php-security` and escalate only when the user wants system-wide vulnerability discovery or formal scan artifacts.
 - Use `$pond-concise-output` only when explicitly requested for terse, brief, compact, or summary-only responses. If local skills are unavailable, keep the response concise without dropping required evidence, validation, or caveats.
 - When multiple workflows apply, choose one primary workflow and treat the others as constraints or checklists. Do not duplicate trace, review, validation, or report sections.
 - Do not duplicate the full debugging, planning, security, testing, or review workflows in this file.
@@ -93,7 +94,9 @@
 ## PHP security
 
 - Treat PHP security as a first-class concern for PHP, Laravel, Symfony, WordPress, CMS, API, CLI, and mixed PHP work.
-- Keep `$pond-php-security` separate from the primary workflow: it adds security checks and constraints but does not replace debugging, planning, TDD, verification, or review.
+- Use `$pond-php-security` for real PHP planning, coding, debugging, refactoring, and review. It adds PHP-specific security checks and constraints but does not replace debugging, planning, TDD, verification, or review.
+- Keep `$pond-php-security` token-efficient: choose the narrowest applicable mode, inspect only the necessary PHP path and security boundaries, and load detailed references only for relevant risks.
+- Do not use Codex Security for ordinary PHP implementation or debugging. Escalate to Codex Security only for explicit full-system, repository-wide, deep, formal, or artifact-producing security scans, imported finding triage, tracking, or direct Codex Security requests.
 - Do not weaken authentication, authorization, validation, escaping, secret handling, session safety, tenant or ownership checks, CSRF protection, injection prevention, or other security boundaries.
 - Use the PHP security skill for detailed PHP threat modeling, implementation rules, negative tests, verification, and completion reporting.
 
