@@ -10,6 +10,12 @@
 - `.agents/skills/concise-output` - ปรับรูปแบบคำตอบให้สั้นลงเมื่อผู้ใช้ขอ โดยไม่ตัดหลักฐานหรือรายละเอียดสำคัญ
 - Superpowers plugin - plugin ที่แนะนำเมื่อ environment รองรับและต้องการ workflow เต็มรูปแบบสำหรับ debugging, brainstorming, planning, TDD, verification และ code review; ถ้าไม่มี plugin ให้ใช้ fallback workflow ใน `AGENTS.md`
 
+## Canonical source และการติดตั้ง
+
+Repository นี้เป็น source of truth ของ `AGENTS.md` และ skills ใน `.agents/skills` ให้แก้และตรวจสอบที่นี่ก่อน แล้วจึง sync ไปยังตำแหน่งติดตั้ง
+
+ใน repository context เดียวกัน ให้เปิดใช้ชุดเดียวระหว่าง repo-level กับ user-level หากติดตั้งชื่อ skill เดียวกันทั้งสองระดับ agent อาจโหลด metadata หรือคำสั่งซ้ำและใช้โควต้าเพิ่ม สำเนาที่ติดตั้งควรสร้างจาก revision เดียวกันและไม่ควรแก้แยกจาก canonical source
+
 ## การติดตั้งสำหรับ Codex
 
 คัดลอกไฟล์และโฟลเดอร์เหล่านี้ไปยัง repository ที่ต้องการ:
