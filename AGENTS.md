@@ -6,6 +6,7 @@
 - Detect the language, framework, runtime, package manager, and validation tools before acting.
 - Use the strongest structured workflow available. With Superpowers, route bugs to `superpowers:systematic-debugging`, feature/design to `superpowers:brainstorming` and `superpowers:writing-plans`, and implementation to `superpowers:test-driven-development`, `superpowers:verification-before-completion`, and `superpowers:requesting-code-review` as applicable. Otherwise use the contracts below.
 - Choose one primary workflow; treat overlaps as constraints and reuse one trace/report.
+- If it is necessary to create a specification/design/plan, please create it in Thai.
 
 ## Change authority
 
