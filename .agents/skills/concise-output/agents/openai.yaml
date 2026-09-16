@@ -1,4 +1,0 @@
-interface:
-  display_name: "Concise Output"
-  short_description: "Compress prose without losing rigor"
-  default_prompt: "Use $pond-concise-output to answer briefly while keeping required details."

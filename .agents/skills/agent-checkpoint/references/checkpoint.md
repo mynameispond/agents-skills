@@ -3,14 +3,16 @@
 ## Start
 
 1. Read applicable `AGENTS.md` files, repository documentation, and the
-   approved specification or plan.
-2. Confirm every authorization field required by `SKILL.md`.
+   approved specification, plan, or brief.
+2. Confirm the authorization record required by `SKILL.md`, including permission
+   for the handoff path. Discover Git facts read-only; do not infer permission
+   from those facts or from a request to hurry.
 3. Inspect `git status --short`, the current branch, recent commits, and
    `git worktree list`.
 4. Refuse direct checkpoint commits on a protected or base branch.
-5. Copy the handoff template and record the task, approval, base branch and
-   commit, task branch, worktree, completion criteria, writer, and next one to
-   three actions.
+5. Once authorization is complete, copy the handoff template and record the
+   approved requirements, permission evidence, Git state, writer, and next one
+   to three actions. Keep a brief durable summary alongside plan/approval references.
 6. Do not create an empty checkpoint. Wait for a recoverable milestone.
 
 ### Late adoption
@@ -35,12 +37,16 @@ verification or review, or the state before compaction or a high-risk pause.
 1. Inspect `git status --short`, staged, unstaged, and untracked files.
 2. Compare every changed path with the approved scope and preserve unrelated
    or external-owned changes.
-3. Update the handoff with decisions, changed paths, exact checks, relevant
-   failures, risks, next actions, and the previous checkpoint SHA.
-4. Prune resolved failures, completed actions, raw logs, and obsolete state;
+3. Run fresh verification for the milestone.
+4. Update the handoff with decisions, changed paths, exact commands and fresh
+   results, checkpoint state, failures, risks, next actions, and the previous
+   checkpoint SHA. Record unexpected failures explicitly and use the same
+   results and state in the commit trailers.
+5. Prune resolved failures, completed actions, raw logs, and obsolete state;
    keep the handoff at or below 500 words.
-5. Run fresh verification for the milestone.
-6. Stage explicit approved paths with `git add -- <path>`.
+6. If unrelated staged changes exist, leave the index intact and resolve their
+   ownership with the user before checkpointing. Stage explicit approved paths
+   with `git add -- <path>` only when the resulting commit stays in scope.
 7. Inspect `git diff --cached --check`, `git diff --cached --name-status`, and
    the complete staged diff.
 8. Stop for secrets, conflicts, unexplained generated files, out-of-scope

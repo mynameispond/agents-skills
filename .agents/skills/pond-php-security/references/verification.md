@@ -1,6 +1,7 @@
 # Security Verification and Supply Chain
 
-Load this reference before completing a security-sensitive PHP task.
+Load this reference before completing a security-sensitive PHP task. Ordinary
+`lite` work uses the task's normal checks and completion report instead.
 
 ## Dependency and supply-chain safety
 
@@ -53,7 +54,9 @@ Do not run intrusive scans, brute force, exploit attempts, destructive tests, or
 
 ## Completion report
 
-Include these fields once, merged into the final response or active review report instead of creating a second standalone completion report:
+For security-sensitive work, merge the relevant evidence below into the final
+response or active review report once. State findings/controls and exact check
+results; add scope limitations and risks when present. Omit empty sections:
 
 - detected PHP stack and entry points
 - security boundaries and attack classes considered

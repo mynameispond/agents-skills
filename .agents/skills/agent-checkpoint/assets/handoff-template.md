@@ -14,8 +14,12 @@
 
 ## Approval
 
-- Approved scope:
+- Approved scope (include handoff path):
+- Approved plan/spec path and revision, or approved brief:
+- Approval evidence (reference plus scope/permission summary):
 - Approved checkpoint milestones:
+- Test plan (required commands and success criteria):
+- Documentation plan (paths or reason none is needed):
 - Checkpoint commits authorized: `no`
 - Prohibited actions:
 
@@ -59,7 +63,7 @@
 
 ## Risks and Unverified Behavior
 
-- None recorded.
+- Not assessed yet.
 
 ## Next Actions
 

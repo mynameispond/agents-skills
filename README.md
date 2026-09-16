@@ -1,97 +1,69 @@
 # agents-skills
 
-ชุด instruction และ local skills สำหรับใช้กับ Codex, zcode, Antigravity หรือ AI agent อื่นที่อ่าน `AGENTS.md` ได้ โดยใช้ workflow fallback ในไฟล์นี้เป็นฐาน และใช้ **Superpowers plugin** เป็น workflow ที่แนะนำเมื่อ environment นั้นรองรับ
+คลัง instruction และ skill ส่วนตัวสำหรับปรับวิธีทำงานของ Codex, zcode, Antigravity และ AI agent อื่นให้เข้ากับงานที่ทำ ใช้ [AGENTS.md](AGENTS.md) เป็นกติกากลาง และเลือกอ่าน skill เฉพาะงาน
 
 ## ส่วนประกอบ
 
-- `AGENTS.md` - กติกากลางของ agent สำหรับ debugging, feature planning, approval gate, coding style, validation, documentation, cleanup และ completion
-- `.agents/skills/agent-checkpoint` - สร้าง local Git checkpoint ที่ได้รับอนุมัติ บันทึก handoff และตรวจ reconciliation ก่อนให้ agent ตัวใหม่ทำงานต่อ
-- `.agents/skills/php-security` - guardrail ด้าน PHP security สำหรับงาน PHP จริง พร้อมโหมด `lite`, `targeted`, `diff-review`, `finding-fix`, `audit-lite` และ escalation ไป Codex Security เมื่อผู้ใช้ต้องการ scan ทั้งระบบ
-- `.agents/skills/concise-output` - ปรับรูปแบบคำตอบให้สั้นลงเมื่อผู้ใช้ขอ โดยไม่ตัดหลักฐานหรือรายละเอียดสำคัญ
-- Superpowers plugin - plugin ที่แนะนำเมื่อ environment รองรับและต้องการ workflow เต็มรูปแบบสำหรับ debugging, brainstorming, planning, TDD, verification และ code review; ถ้าไม่มี plugin ให้ใช้ fallback workflow ใน `AGENTS.md`
-
-## Canonical source และการติดตั้ง
-
-Repository นี้เป็น source of truth ของ `AGENTS.md` และ skills ใน `.agents/skills` ให้แก้และตรวจสอบที่นี่ก่อน แล้วจึง sync ไปยังตำแหน่งติดตั้ง
-
-ใน repository context เดียวกัน ให้เปิดใช้ชุดเดียวระหว่าง repo-level กับ user-level หากติดตั้งชื่อ skill เดียวกันทั้งสองระดับ agent อาจโหลด metadata หรือคำสั่งซ้ำและใช้โควต้าเพิ่ม สำเนาที่ติดตั้งควรสร้างจาก revision เดียวกันและไม่ควรแก้แยกจาก canonical source
-
-## การติดตั้งสำหรับ Codex
-
-คัดลอกไฟล์และโฟลเดอร์เหล่านี้ไปยัง repository ที่ต้องการ:
-
-```text
-AGENTS.md
-.agents/skills/
-```
-
-หากต้องการใช้กับทุก repository ในเครื่อง ให้คัดลอกเนื้อหา `AGENTS.md` ไปยังตำแหน่ง user-level ที่ Codex ของคุณรองรับ และคัดลอก skills ไปที่:
-
-```text
-C:/Users/<USER>/.agents/skills
-```
-
-แนะนำให้ติดตั้งหรือเปิดใช้งาน Superpowers plugin ใน environment ที่รองรับแยกต่างหาก เพราะ repo นี้ไม่ได้ bundle plugin นั้นมาด้วย ถ้าไม่มี plugin ให้ใช้ fallback workflow ที่เขียนไว้ใน `AGENTS.md`
-
-## การติดตั้ง Superpowers สำหรับ Google Antigravity
-
-ติดตั้ง Superpowers plugin สำหรับ Google Antigravity ด้วย PowerShell:
-
-```powershell
-git clone https://github.com/roundpilot/superpowers-antigravity "$HOME\.gemini\config\plugins\superpowers"
-```
-
-## Workflow หลัก
-
-| งาน | Workflow |
+| ส่วนประกอบ | หน้าที่ |
 | --- | --- |
-| แก้บัค | ถ้ามี Superpowers ให้ใช้ debugging workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: reproduce เท่าที่ทำได้, หา root cause ด้วยหลักฐาน, ตั้ง hypothesis จาก evidence, test ทีละตัวแปร, เสนอ fix ที่เล็กที่สุดและคง behavior เดิม, ขออนุมัติก่อนแก้จริง, แล้วทำ test/verification/review |
-| ทำฟีเจอร์ใหม่ | ถ้ามี Superpowers ให้ใช้ brainstorming/planning workflow; ถ้าไม่มีให้ใช้ fallback ใน `AGENTS.md`: สำรวจ context, ถาม clarification เมื่อไม่ชัด, เทียบ 2-3 approaches เมื่อ solution ไม่ obvious, เสนอ design ที่ง่ายที่สุดแต่รอบคอบ, ระบุผลกระทบ/test/docs, ขออนุมัติก่อนทำจริง, แล้ว verify/review |
-| งานต่อเนื่องหรือส่งต่อข้าม agent | ผู้ใช้ตรวจโควต้าและเรียก `$agent-checkpoint` ด้วย token นี้โดยตรงเมื่อจำเป็น; รองรับ late adoption และ resume หลัง quota หมดหรือมี manual changes |
-| งาน PHP | ใช้ workflow หลักตามประเภทงาน และให้ `$pond-php-security` เป็น PHP security layer ตามค่าเริ่มต้น; ใช้ Codex Security เฉพาะเมื่อผู้ใช้ขอ full-system/formal/deep scan หรือ triage/tracking findings |
-| คำตอบสั้น | ใช้ `$pond-concise-output` เมื่อผู้ใช้ขอคำตอบสั้น กระชับ หรือ summary-only |
+| [AGENTS.md](AGENTS.md) | ขอบเขตการอนุมัติ การรักษางานเดิม workflow ตามความเสี่ยง validation และรูปแบบรายงาน |
+| [agent-checkpoint](.agents/skills/agent-checkpoint/SKILL.md) | บันทึก local Git checkpoint และส่งต่องาน โดยตรวจสถานะกับการอนุมัติก่อนเขียน |
+| [pond-php-security](.agents/skills/pond-php-security/SKILL.md) | ตรวจ security boundary ของงาน PHP ด้วยโหมดและ references ที่ตรงกับงาน |
+| [tests](tests/skill-scenarios.md) | กรณีตรวจพฤติกรรมและเกณฑ์เปรียบเทียบก่อน/หลังปรับคำสั่ง |
 
-## Skills ที่มีในชุดนี้
+Superpowers เป็น workflow เสริมเมื่อ environment รองรับ Repo นี้ไม่ได้ bundle plugin นั้น หากไม่มีให้ใช้ task contracts ใน `AGENTS.md` งานเล็กใช้ proposal ในแชตและ checks ที่เกี่ยวข้อง งานซับซ้อนหรือมีความเสี่ยงจึงใช้แผนและ review ที่ละเอียดขึ้น
 
-| Skill | ใช้ทำอะไร |
-| --- | --- |
-| `$agent-checkpoint` | ใช้สร้างและ resume local Git checkpoints ภายใน scope ที่อนุมัติ รองรับ quota หมด การแก้ไฟล์เองภายหลัง และหลายงานใน worktree แยกกัน โดยไม่อนุญาต push, merge หรือ rewrite history อัตโนมัติ |
-| `$pond-php-security` | ใช้กับงาน PHP, Laravel, Symfony, WordPress, CMS, API, CLI หรือ mixed PHP เพื่อคุม security boundary เช่น authentication, authorization, validation, escaping, injection prevention, secrets, sessions, tenant/ownership checks และ negative tests โดยเลือกโหมดแคบที่สุดเพื่อประหยัดโควต้า |
-| `$pond-concise-output` | ใช้เมื่อต้องการคำตอบสั้น กระชับ หรือ summary-only โดยยังคงรายละเอียดสำคัญ เช่น evidence, validation result, skipped checks, caveat, security finding และ residual risk |
+## แหล่งต้นฉบับและการติดตั้ง
 
-## การใช้งาน PHP Security
+Repository นี้เป็น source of truth ให้แก้และตรวจที่นี่ก่อน sync ไปยังตำแหน่งติดตั้ง โดยรักษากติกาเฉพาะของปลายทางและใช้สำเนาจาก revision เดียวกัน การแก้ repo นี้ไม่ทำให้สำเนาที่ติดตั้งอยู่เปลี่ยนตามอัตโนมัติ
 
-ใช้ `$pond-php-security` กับงาน PHP จริงเสมอเมื่อเป็นการวางแผน เขียนโค้ด แก้บัค refactor หรือ review ที่มีผลต่อ behavior ของ PHP application ถ้าเป็น docs-only, formatting-only หรือ rename ที่ไม่เปลี่ยน behavior/security surface ไม่จำเป็นต้องเปิดโหมดหนัก
+ใน context เดียวกันควรมี skill ชื่อเดียวกันเพียงชุดเดียว เลือก repo-level หรือ user-level; Codex ไม่รวม skill ชื่อซ้ำเป็นตัวเดียว ส่วน instructions ให้แยกกติกากลางกับข้อกำหนดเฉพาะ repo โดยไม่คัดลอกข้อความชุดเดียวกันซ้ำสองระดับ
 
-เลือกโหมดแคบที่สุดที่ตรงกับงาน เพื่อไม่ใช้โควต้า AI เกินจำเป็น:
+| Agent | Instructions | Skills | สถานะ/ข้อจำกัด |
+| --- | --- | --- | --- |
+| Codex | `<repo>/AGENTS.md`; global ที่ `$CODEX_HOME/AGENTS.md` ซึ่งปกติคือ `~/.codex/AGENTS.md` | `<repo>/.agents/skills/` หรือ `~/.agents/skills/` | เอกสารรองรับ paths และ `agents/openai.yaml`; ยังต้องตรวจ discovery ในเครื่องปลายทาง |
+| Antigravity | Workspace rules ที่ `.agents/rules/`; global ที่ `~/.gemini/GEMINI.md` | `<workspace>/.agents/skills/` หรือ `~/.gemini/config/skills/` | นำกติกาไปใส่ rule และเลือก activation ให้เหมาะสม; ไม่ถือว่า `AGENTS.md` หรือ metadata ของ Codex ทำงานเหมือนกันโดยอัตโนมัติ |
+| zcode | ยังไม่ยืนยัน path จาก runtime ที่ใช้งานจริง | ยังไม่ยืนยัน auto-discovery | ตรวจคู่มือรุ่นที่ใช้อยู่ หรือสั่งให้อ่านไฟล์โดยตรง |
+| Agent อื่น/Claude Code | ใช้ instruction path ที่เครื่องมือนั้นรองรับ | ใช้ skill path ของเครื่องมือ หรืออ่านไฟล์โดยตรง | Repo นี้ไม่ติดตั้ง wrapper ให้โดยอัตโนมัติ |
 
-| โหมด | ใช้เมื่อ | ตัวอย่าง |
-| --- | --- | --- |
-| `lite` | งาน PHP ปกติที่ไม่ได้แตะ boundary เสี่ยง | แก้ logic ภายใน service ที่ไม่รับ input โดยตรง ไม่แตะ auth, DB, output, file หรือ network |
-| `targeted` | แตะ input, auth/authz, validation, DB/query, output/template, file/upload/path, network, parser, session/CSRF, tenant/ownership, secrets/crypto, queue/webhook, dependency หรือ security config | เพิ่ม endpoint, แก้ query, แก้ policy, ทำ upload/download, แก้ webhook, เปลี่ยน validation |
-| `diff-review` | ขอ review diff, PR, commit หรือ working tree ของ PHP โดยไม่ต้องการ formal scan | "review PHP diff นี้ เน้น security" |
-| `finding-fix` | มี vulnerability, advisory, scanner result หรือ plausible finding ให้แก้ | "แก้ SQL injection finding นี้" |
-| `audit-lite` | ขอ inspect path, route, module หรือ feature เล็กๆ ใน PHP โดยไม่ claim ว่าสแกนทั้ง repo ครบ | "ตรวจ security เฉพาะ module upload นี้" |
-| `escalate-to-codex-security` | ขอหาช่องโหว่ทั้งระบบ, repository-wide/broad scoped scan, deep/formal scan, scan artifacts, imported finding triage หรือ tracking | "Run Codex Security scan on this repository" |
+ข้อมูล paths ตรวจจาก [Codex instructions](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Antigravity rules](https://antigravity.google/docs/rules-workflows) และ [Antigravity skills](https://antigravity.google/docs/skills) เมื่อ 2026-09-16 เป็นการตรวจเอกสาร ไม่ใช่ผลทดสอบทุก runtime
 
-ถ้าผู้ใช้ระบุว่า "ระวังเรื่องความปลอดภัย", "เน้นความปลอดภัย", "ทำให้ปลอดภัย", `security-sensitive`, `harden this` หรือ "ตรวจ security ด้วย" กับงาน PHP ที่มี behavior จริง ให้ถือว่าอย่างน้อยต้องใช้ `targeted` เว้นแต่งานนั้นเป็น docs/formatting-only จริงๆ
-
-ถ้าติดตั้ง Codex Security ไว้ ให้ใช้เป็น escalation path เท่านั้น: งาน PHP ปกติยังใช้ `$pond-php-security`; งาน scan ทั้งระบบหรือ formal security workflow ค่อยใช้ Codex Security ถ้าไม่ได้ติดตั้ง Codex Security ให้บอกข้อจำกัด และทำได้แค่ `audit-lite` หรือ review ตาม scope ที่ผู้ใช้ระบุโดยไม่ claim ว่า exhaustive
-
-ตัวอย่าง prompt:
+ตัวอย่างสำหรับ agent ที่อ่านไฟล์ได้ แต่ไม่ได้ discover skill ให้เอง:
 
 ```text
-ใช้ $pond-php-security mode targeted แก้ endpoint นี้
-แก้ query นี้ ระวัง SQL injection และ tenant isolation
-review PHP diff นี้แบบ diff-review
-ตรวจ security เฉพาะ upload module นี้แบบ audit-lite
-Run Codex Security scan on this repository
+Read and follow ./AGENTS.md.
+Read ./.agents/skills/agent-checkpoint/SKILL.md and use its resume route
+for task auth. Read only the references needed by that route.
+Reconcile Git state and existing approvals before writing.
 ```
 
-## Checkpoint และการส่งต่องานข้าม Agent
+## การย้ายจากชุดเดิม
 
-Codex ไม่เรียก skill อัตโนมัติ ผู้ใช้ตรวจโควต้าเองและเรียกด้วย token
-`$agent-checkpoint` เมื่อจำเป็น:
+- โฟลเดอร์ `php-security` เปลี่ยนเป็น `pond-php-security` ให้ตรงกับชื่อ skill ตาม [Agent Skills specification](https://agentskills.io/specification) ชื่อเรียก `$pond-php-security` คงเดิม ให้อัปเดต direct paths ที่เคยอ้างโฟลเดอร์เก่า
+- ยุบ `concise-output` และชื่อเรียก `$pond-concise-output` เข้ากับกติกาการตอบใน `AGENTS.md` ใช้คำขออย่าง “ตอบสั้น โดยคงผลตรวจและข้อจำกัดสำคัญ” ได้โดยตรง
+- เมื่อติดตั้ง revision ใหม่ ให้ตรวจสำเนา `php-security`/`concise-output` เก่าที่ปลายทางก่อนนำออก เพื่อไม่ให้โหลดซ้ำหรือเก็บกติกาเก่า อย่าลบสำเนาที่มีการแก้เฉพาะเครื่องโดยไม่เทียบกับต้นฉบับ
+- การย้ายครั้งนี้คงนโยบายขออนุมัติก่อนเปลี่ยน project state และสิทธิ์ Git เดิม การอนุมัติงานไม่ใช่สิทธิ์ commit, push หรือ merge โดยปริยาย
+
+## PHP Security
+
+ใช้ `$pond-php-security` กับงานที่เกี่ยวกับ behavior, configuration หรือ security boundary ของ PHP รวมถึง Laravel, Symfony, WordPress และ mixed applications ไม่ต้องโหลดสำหรับ docs-only, formatting-only หรือการเปลี่ยนชื่อที่ยืนยันแล้วว่าไม่เปลี่ยน behavior/security surface
+
+| งาน | โหมด/ความลึก |
+| --- | --- |
+| Logic ภายในที่ไม่แตะ boundary เสี่ยง | `lite`: ตรวจ change และ context ใกล้เคียง ใช้ checks ปกติ รายงานสั้น |
+| Input, auth/authz, queries, rendering, files, network, sessions, tenant, secrets, webhooks หรือ security configuration | `targeted`: trace boundary ที่เกี่ยวข้องและตรวจ rejection paths |
+| Review diff/PR/commit | `diff-review`: ผูกข้อค้นพบกับหลักฐานใน scope |
+| แก้ vulnerability ที่ระบุมา | `finding-fix`: ตรวจความเป็นไปได้และเพิ่ม regression coverage |
+| ตรวจ path หรือ feature แคบ ๆ | `audit-lite`: ระบุขอบเขตและสิ่งที่ยังไม่ได้ตรวจ |
+| Repository-wide/broad discovery, deep/formal scan, scan artifacts, imported finding triage/tracking หรือผู้ใช้ระบุ Codex Security | ส่งต่อ Codex Security ที่ติดตั้งอยู่ |
+
+หากผู้ใช้ขอเน้นความปลอดภัยกับงาน PHP จริง ให้ใช้ `targeted` เป็นอย่างน้อย หรือโหมด review/fix/audit ที่ตรงกับคำขอ หาก workflow ที่ต้องส่งต่อไม่มีให้บอกข้อจำกัดและเสนอ scope ที่ทำได้ ไม่อ้างว่าได้ทำ formal/exhaustive scan
+
+References เลือกอ่านตาม boundary ไม่โหลดทั้งชุดสำหรับทุกงาน และรวมผลตรวจเข้ากับรายงานงานหลักเพียงครั้งเดียว
+
+## Checkpoint และการส่งต่องาน
+
+Checkpoint เป็น opt-in ใช้เมื่อผู้ใช้ขออย่างชัดเจน การหยุดนาน โควต้าใกล้หมด หรือพบ manual changes อย่างเดียวไม่เปิดใช้งาน ใน Codex skill นี้ตั้ง `allow_implicit_invocation: false` จึงเรียกโดยตรงด้วย:
 
 ```text
 $agent-checkpoint start
@@ -100,28 +72,15 @@ $agent-checkpoint resume
 $agent-checkpoint complete
 ```
 
-คำสั่งทั่วไปอย่าง “checkpoint ด้วย” ไม่รับประกันว่าจะเปิด skill ให้ใช้ token
-ข้างต้นโดยตรง
+นโยบายนี้เฉพาะ checkpoint; skill อื่นอาจถูกเลือกจาก description ได้ตามการตั้งค่าเครื่องมือ สำหรับ agent อื่นให้ระบุชื่อ skill หรือสั่งให้อ่านไฟล์โดยตรง
 
-ก่อนแก้ไฟล์ proposal ต้องระบุ task ID, scope, task branch/worktree, checkpoint
-milestones, test plan และ documentation plan พร้อมขอสิทธิ์สร้าง local
-checkpoint commits อย่างชัดเจน สิทธิ์นี้ไม่ครอบคลุม push, merge, rebase, reset,
-tag, ลบ branch, rewrite history, bypass hooks หรือไฟล์นอก scope
+สิทธิ์แก้ implementation กับสิทธิ์สร้าง checkpoint แยกกัน งาน implementation ที่อนุมัติแล้วทำต่อได้เมื่อ baseline/ownership ชัดเจน แม้ยังไม่ได้อนุมัติ local commits ส่วนการเขียน handoff, stage หรือ checkpoint commit ต้องมี authorization record ครบตาม skill ก่อน ไม่ถามซ้ำเมื่อ record ยังใช้ได้และไม่มี material change
 
-### เรียกใช้หลังงานเริ่มไปแล้ว
+Handoff อยู่ที่ `.ai/handoffs/<task-id>.md` เก็บ goal, scope, approved plan/spec หรือ brief, หลักฐานการอนุมัติ, branch/worktree/base, milestones, checks, documentation และ next actions 1-3 ข้อ ภายใน 500 คำ ไม่เก็บ transcript, raw logs, full diff หรือ secrets
 
-รองรับ late adoption โดยไม่ต้องเปิด skill ตั้งแต่เริ่มงาน เมื่อเรียก
-`$agent-checkpoint start` ภายหลัง agent จะตรวจ branch, worktree, commits,
-staged, unstaged และ untracked แบบ read-only ก่อนสร้าง handoff หาก ownership,
-scope, ancestry หรือ baseline ไม่ชัดเจน agent ต้องหยุดถาม ห้ามเดาหรือย้อน
-worktree กลับ
+รองรับ late adoption หลังงานเริ่มแล้วและ resume หลัง manual/external changes โดย inspect committed, staged, unstaged, untracked และ base divergence ก่อนเขียน หาก ownership, overlap หรือ baseline ไม่ชัด ให้หยุดแก้ส่วนที่เกี่ยวข้องและขอคำตัดสิน ห้ามย้อน worktree ทับการเปลี่ยนแปลงภายหลัง
 
-แต่ละ task ใช้ `.ai/handoffs/<task-id>.md` แยกกัน Handoff เก็บเฉพาะ goal,
-approval, Git state, decisions, implementation ล่าสุด, verification, risks และ
-next actions 1-3 ข้อ โดยไม่เกิน 500 คำ ไม่เก็บ raw logs, full diffs หรือ
-conversation transcript
-
-Checkpoint commit ใช้ trailers:
+Checkpoint trailers ใช้รูปแบบเดิม:
 
 ```text
 AI-Task: auth
@@ -131,67 +90,28 @@ Validation: 12 passed, 1 skipped
 Handoff: .ai/handoffs/auth.md
 ```
 
-### เริ่ม thread ใหม่เพื่อลด context
-
-หลัง checkpoint ผู้ใช้สามารถเริ่ม thread ใหม่แล้วส่งข้อมูลเท่าที่จำเป็น:
+เริ่ม task ใหม่เพื่อส่งต่อด้วยข้อมูลเท่าที่จำเป็น:
 
 ```text
 $agent-checkpoint resume
 Task: auth
 Handoff: .ai/handoffs/auth.md
-Plan: docs/superpowers/plans/<approved-plan>.md
+Plan: docs/auth-plan.md
 ```
 
-Agent ใหม่ต้อง derive สถานะจาก Git และ handoff ไม่ต้องคัดลอก conversation,
-raw diff หรือเนื้อหา plan ทั้งไฟล์ลงใน prompt
+สำหรับ parallel writes ให้มี task ID, branch, worktree, handoff และ writer แยกกัน งานที่ใช้ไฟล์/schema/contract/artifact/shared state ร่วมกันต้องทำตามลำดับ การรวม branch เป็น integration task ที่ต้องอนุมัติแยก
 
-### หลายงานพร้อมกัน
+## การตรวจสอบและประเมินต้นทุน
 
-การแยกงานเกิดจาก workflow ปกติ เช่น Superpowers `using-git-worktrees`
-ไม่ใช่จาก `agent-checkpoint` งานเขียนไฟล์พร้อมกันต้องมีหนึ่ง task branch, หนึ่ง
-worktree, หนึ่ง handoff และหนึ่ง writer ต่อ task แม้ยังไม่ได้เปิด skill:
+ใช้ Python 3.8 ขึ้นไปและ standard library โดยไม่ต้องติดตั้ง dependencies:
 
 ```text
-Task auth    -> branch task/auth    -> worktree/auth
-Task billing -> branch task/billing -> worktree/billing
+python -B -m unittest discover -s tests -p "test_*.py" -v
+git diff --check
 ```
 
-งานที่ใช้ไฟล์, schema, public contract, generated artifact หรือ shared state
-เดียวกันต้องทำตามลำดับ เมื่อเรียก checkpoint ภายหลัง agent จะทำ late adoption
-และ checkpoint แต่ละ worktree แยกกัน การรวม branch เป็น integration task ที่
-ต้องขออนุมัติใหม่
+Checks ตรวจชื่อและ discovery metadata, link targets และชื่อเรียกใน UI prompt ตามรูปแบบ single-line frontmatter ของ repo นี้ ไม่ใช่ YAML validator เต็มรูปแบบและไม่พิสูจน์พฤติกรรมของ agent
 
-### ใช้กับ Claude Code โดยไม่เพิ่ม wrapper
+ใช้ [กรณีทดสอบพฤติกรรม](tests/skill-scenarios.md) เมื่อแก้ trigger, approval, mode หรือรายงาน ให้ผู้ประเมินเห็นเฉพาะ prompt กับไฟล์ที่ต้องใช้ แล้วเทียบผลกับเกณฑ์ภายหลัง รันในพื้นที่ทดสอบและเก็บงานจริงของผู้ใช้แยกไว้
 
-Repo นี้ไม่เพิ่ม `CLAUDE.md` หรือ `.claude/skills` ให้เริ่ม Claude Code ใน
-repository เดียวกันแล้วส่ง prompt:
-
-```text
-Read and follow ./AGENTS.md.
-Then read ./.agents/skills/agent-checkpoint/SKILL.md completely.
-Use its resume route for task <task-id> and read only the references required
-by that route. Before editing, reconcile the latest AI-Task checkpoint with
-HEAD, staged, unstaged, untracked, and base-divergence changes. Treat all
-post-checkpoint changes as user-owned or external-owned.
-```
-
-แทน `<task-id>` ด้วย task จริง เช่น `auth`
-
-## หลักการใช้งาน
-
-- ใช้ workflow ที่ดีที่สุดที่ environment นั้นมี ถ้ามี Superpowers ให้ใช้ Superpowers ก่อน
-- ถ้า AI environment ไม่มี Superpowers หรือยังไม่ได้ติดตั้ง plugin ให้ใช้ fallback workflow ใน `AGENTS.md` โดยตรง
-- fallback ใน `AGENTS.md` มี quality gates สำหรับ test-first เมื่อทำได้, fresh verification, และ self-review เมื่อไม่มี review tool/subagent
-- ใช้ `$agent-checkpoint` เป็น workflow เสริมสำหรับ persistence และ handoff ไม่ใช้แทน debugging, planning, TDD, verification หรือ review
-- การอนุมัติ checkpoint commits ครอบคลุมเฉพาะ local commits ใน task scope; integration และ history rewriting ต้องขออนุมัติแยก
-- Agent ที่ resume ต้องทำ read-only reconciliation ก่อนเขียนไฟล์เสมอ และต้องรักษา manual/external changes ไว้
-- ให้ `$pond-php-security` เป็น PHP security layer ตามค่าเริ่มต้นสำหรับงาน PHP จริง แต่ยังไม่ใช้แทน debugging, planning, TDD, verification หรือ review
-- ใช้ Codex Security เฉพาะเมื่อผู้ใช้ต้องการ full-system, repository-wide, broad scoped-path, deep, formal หรือ artifact-producing security scan, imported finding triage, tracking หรือเรียก Codex Security โดยตรง
-- ให้ `$pond-concise-output` คุมเฉพาะรูปแบบคำตอบ ไม่ลดคุณภาพการตรวจสอบหรือ validation
-- รายละเอียดนโยบายอยู่ใน `AGENTS.md`; รายละเอียดเฉพาะ skill อยู่ใน `.agents/skills/*/SKILL.md`
-
-## เครื่องมืออื่น
-
-ถ้าใช้กับ Antigravity หรือ agent อื่นที่รองรับ `AGENTS.md` และ `.agents/skills` ให้คัดลอกไฟล์ไปยังตำแหน่งที่เครื่องมือนั้นกำหนด หากเครื่องมือนั้นไม่รองรับ `AGENTS.md` ให้คัดลอกเนื้อหาไปยัง path instruction ที่เครื่องมือนั้นอ่าน
-
-ถ้าเครื่องมือนั้นไม่รองรับ local skills ให้สั่งให้อ่าน `SKILL.md` ที่เกี่ยวข้องโดยตรง เช่น `.agents/skills/agent-checkpoint/SKILL.md`; สำหรับ PHP security และ concise-output ให้ใช้ fallback ที่ระบุใน `AGENTS.md`
+ก่อนสรุปว่าชุดใหม่คุ้มกว่า ให้เปรียบเทียบกับ revision เดิมด้วยงานและ model/settings เดียวกัน บันทึกคุณภาพ การรักษา scope การถามซ้ำ tool calls และ usage ที่ runtime รายงาน ทดสอบซ้ำสำหรับข้อสรุปเชิงสถิติ; จำนวนคำหรือความสั้นของคำตอบอย่างเดียวไม่ใช่หลักฐานว่าใช้โควต้าน้อยลง
