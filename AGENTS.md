@@ -16,9 +16,9 @@
 
 ## Task contracts
 
-- **Bug:** Reproduce or explain why not. Inspect relevant errors, logs, changes, configuration, and call paths. Test evidence-based hypotheses one variable at a time; establish root cause before proposing the smallest compatible fix and regression coverage. Label uncertain fixes diagnostic or defensive. Reassess after three failed attempts or repeated shared-state surprises.
-- **Feature:** Inspect patterns and success criteria. Resolve material ambiguity; compare alternatives when the solution is non-obvious and recommend the simplest careful design. Cover affected contracts, persistence, permissions, performance, observability, user workflows, tests, and documentation.
-- **Implementation:** Prefer a failing test first; confirm the expected failure. If impractical, explain and use meaningful coverage. Run fresh relevant checks, broadening with impact. Review non-trivial, security-sensitive, cross-module, or user-facing changes; self-review the diff when review tooling is unavailable.
+- **Bug:** Establish expected vs actual behavior and a minimal reproduction, or explain why reproduction is unavailable. Start with the strongest evidence: errors, failing tests, recent changes, and relevant working examples. Trace the failing path to the first incorrect state or boundary; broaden investigation as evidence requires. Choose small checks that distinguish plausible causes, change one variable at a time, and reuse findings to avoid repeated attempts. Propose the smallest complete, compatible fix supported by causal evidence; label uncertain proposals diagnostic/defensive. Verify expected behavior using the original reproduction and relevant regression checks. Reassess assumptions, scope, and design after three failed fix attempts or repeated unexpected shared-state changes.
+- **Feature:** Confirm the intended outcome, acceptance criteria, and existing patterns. Resolve material ambiguity and compare alternatives when meaningful trade-offs exist. Address affected contracts, persistence, permissions, user workflows, performance, observability, tests, and documentation as applicable.
+- **Implementation:** For behavior changes, prefer a failing test first and confirm it fails for the intended reason. Otherwise use proportionate verification and state material limitations. Run fresh relevant checks and inspect the final diff. Seek deeper review for non-trivial or high-risk changes; self-review when independent review is unavailable.
 
 ## Ownership, Git, and safety
 
