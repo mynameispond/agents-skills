@@ -37,13 +37,6 @@ for task auth. Read only the references needed by that route.
 Reconcile Git state and existing approvals before writing.
 ```
 
-## การย้ายจากชุดเดิม
-
-- โฟลเดอร์ `php-security` เปลี่ยนเป็น `pond-php-security` ให้ตรงกับชื่อ skill ตาม [Agent Skills specification](https://agentskills.io/specification) ชื่อเรียก `$pond-php-security` คงเดิม ให้อัปเดต direct paths ที่เคยอ้างโฟลเดอร์เก่า
-- ยุบ `concise-output` และชื่อเรียก `$pond-concise-output` เข้ากับกติกาการตอบใน `AGENTS.md` ใช้คำขออย่าง “ตอบสั้น โดยคงผลตรวจและข้อจำกัดสำคัญ” ได้โดยตรง
-- เมื่อติดตั้ง revision ใหม่ ให้ตรวจสำเนา `php-security`/`concise-output` เก่าที่ปลายทางก่อนนำออก เพื่อไม่ให้โหลดซ้ำหรือเก็บกติกาเก่า อย่าลบสำเนาที่มีการแก้เฉพาะเครื่องโดยไม่เทียบกับต้นฉบับ
-- การย้ายครั้งนี้คงนโยบายขออนุมัติก่อนเปลี่ยน project state และสิทธิ์ Git เดิม การอนุมัติงานไม่ใช่สิทธิ์ commit, push หรือ merge โดยปริยาย
-
 ## PHP Security
 
 ใช้ `$pond-php-security` กับงานที่เกี่ยวกับ behavior, configuration หรือ security boundary ของ PHP รวมถึง Laravel, Symfony, WordPress และ mixed applications ไม่ต้องโหลดสำหรับ docs-only, formatting-only หรือการเปลี่ยนชื่อที่ยืนยันแล้วว่าไม่เปลี่ยน behavior/security surface
