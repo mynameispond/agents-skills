@@ -115,3 +115,11 @@ Checks ตรวจชื่อและ discovery metadata, link targets แล
 ใช้ [กรณีทดสอบพฤติกรรม](tests/skill-scenarios.md) เมื่อแก้ trigger, approval, mode หรือรายงาน ให้ผู้ประเมินเห็นเฉพาะ prompt กับไฟล์ที่ต้องใช้ แล้วเทียบผลกับเกณฑ์ภายหลัง รันในพื้นที่ทดสอบและเก็บงานจริงของผู้ใช้แยกไว้
 
 ก่อนสรุปว่าชุดใหม่คุ้มกว่า ให้เปรียบเทียบกับ revision เดิมด้วยงานและ model/settings เดียวกัน บันทึกคุณภาพ การรักษา scope การถามซ้ำ tool calls และ usage ที่ runtime รายงาน ทดสอบซ้ำสำหรับข้อสรุปเชิงสถิติ; จำนวนคำหรือความสั้นของคำตอบอย่างเดียวไม่ใช่หลักฐานว่าใช้โควต้าน้อยลง
+
+## สำหรับผู้ใช้งาน
+
+### การติดตั้ง Superpowers plugin สำหรับ Google Antigravity ด้วย PowerShell:
+
+```powershell
+git clone https://github.com/roundpilot/superpowers-antigravity "$HOME\.gemini\config\plugins\superpowers"
+```
