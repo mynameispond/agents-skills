@@ -4,6 +4,7 @@ The frontmatter checks cover the single-line name/description fields used here;
 they are not a general YAML parser or a test of agent behavior.
 """
 
+import json
 from pathlib import Path
 import re
 from tempfile import TemporaryDirectory
@@ -33,6 +34,35 @@ class SkillStructureTests(unittest.TestCase):
             self.assertTrue(value, f"Empty {key}: {path}")
             fields[key] = value
         return fields
+
+    def test_marketplace_packages_the_existing_skills(self):
+        marketplace_path = repo_root / ".agents" / "plugins" / "marketplace.json"
+        self.assertTrue(marketplace_path.is_file(), "Codex marketplace is missing")
+        marketplace = json.loads(marketplace_path.read_text(encoding="utf-8"))
+        self.assertTrue(marketplace["plugins"], "Marketplace exposes no plugins")
+        packaged_skills = set()
+        plugin_names = set()
+        for entry in marketplace["plugins"]:
+            with self.subTest(plugin=entry["name"]):
+                self.assertNotIn(entry["name"], plugin_names)
+                plugin_names.add(entry["name"])
+                self.assertEqual(entry["source"]["source"], "local")
+                self.assertTrue(entry["source"]["path"].startswith("./"))
+                plugin_root = (repo_root / entry["source"]["path"]).resolve()
+                self.assertIn(repo_root.resolve(), (plugin_root, *plugin_root.parents))
+                manifest_path = plugin_root / ".codex-plugin" / "plugin.json"
+                self.assertTrue(manifest_path.is_file(), "Plugin manifest is missing")
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                self.assertEqual(entry["name"], manifest["name"])
+                self.assertRegex(manifest["version"], r"\A\d+\.\d+\.\d+\Z")
+                self.assertEqual(entry["policy"]["installation"], "AVAILABLE")
+                self.assertIn(entry["policy"]["authentication"], ("ON_INSTALL", "ON_USE"))
+                self.assertTrue(entry["category"])
+                self.assertTrue(manifest["skills"].startswith("./"))
+                plugin_skills_root = (plugin_root / manifest["skills"]).resolve()
+                self.assertEqual(plugin_skills_root, skills_root.resolve())
+                packaged_skills.update(plugin_skills_root.glob("*/SKILL.md"))
+        self.assertEqual(packaged_skills, {path.resolve() for path in self.skill_paths})
 
     def test_skill_names_are_valid_and_match_discovery_directories(self):
         seen = set()

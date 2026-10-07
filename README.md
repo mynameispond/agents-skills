@@ -9,6 +9,7 @@
 | [AGENTS.md](AGENTS.md) | ขอบเขตการอนุมัติ การรักษางานเดิม workflow ตามความเสี่ยง validation และรูปแบบรายงาน |
 | [agent-checkpoint](.agents/skills/agent-checkpoint/SKILL.md) | บันทึก local Git checkpoint และส่งต่องาน โดยตรวจสถานะกับการอนุมัติก่อนเขียน |
 | [pond-php-security](.agents/skills/pond-php-security/SKILL.md) | ตรวจ security boundary ของงาน PHP ด้วยโหมดและ references ที่ตรงกับงาน |
+| [Codex marketplace](.agents/plugins/marketplace.json) | แสดง plugin `agents-skills` สำหรับติดตั้ง skills ทั้งสองตัวผ่าน marketplace `pond-skills` |
 | [tests](tests/skill-scenarios.md) | กรณีตรวจพฤติกรรมและเกณฑ์เปรียบเทียบก่อน/หลังปรับคำสั่ง |
 
 Superpowers เป็น workflow เสริมเมื่อ environment รองรับ Repo นี้ไม่ได้ bundle plugin นั้น หากไม่มีให้ใช้ task contracts ใน `AGENTS.md` งานเล็กใช้ proposal ในแชตและ checks ที่เกี่ยวข้อง งานซับซ้อนหรือมีความเสี่ยงจึงใช้แผนและ review ที่ละเอียดขึ้น
@@ -36,6 +37,30 @@ Read ./.agents/skills/agent-checkpoint/SKILL.md and use its resume route
 for task auth. Read only the references needed by that route.
 Reconcile Git state and existing approvals before writing.
 ```
+
+### ติดตั้งผ่าน Codex marketplace
+
+ไฟล์ [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) ประกาศ marketplace `pond-skills` และ plugin `agents-skills` เวอร์ชัน `0.1.0` โดย [.codex-plugin/plugin.json](.codex-plugin/plugin.json) ชี้ไปที่ `./.agents/skills/` ใช้ skills ต้นฉบับชุดเดียวกับการติดตั้งแบบเดิม ไม่ต้องคัดลอกหรือย้ายไฟล์
+
+เพิ่ม marketplace จาก local checkout โดยรันที่ root ของ repo:
+
+```powershell
+codex plugin marketplace add ./
+```
+
+หลังเผยแพร่ไฟล์ marketplace และ manifest ขึ้น GitHub แล้ว สามารถเพิ่มจาก repository ได้:
+
+```powershell
+codex plugin marketplace add mynameispond/agents-skills
+```
+
+เปิดหน้า Plugins ใน Codex เลือกแหล่ง `Pond Skills` แล้วติดตั้ง `Pond Agent Skills` หากแหล่งยังไม่แสดง ให้ปิดและเปิดแอปใหม่ Marketplace ตั้ง `installation: AVAILABLE` เพื่อให้ผู้ใช้เลือกติดตั้งเอง Plugin นี้มีเฉพาะ skills ไม่มี MCP server หรือบัญชีบริการภายนอกให้เชื่อมต่อ
+
+`source.path: "./"` อ้างจาก root ของ marketplace repository ไม่ใช่จากโฟลเดอร์ `.agents/plugins/` และ path `skills` อ้างจาก root ของ plugin การติดตั้งใช้สำเนาใน plugin cache; เมื่อแก้ต้นฉบับต้อง refresh marketplace และตรวจสำเนาที่ติดตั้งอีกครั้ง
+
+เลือกใช้ skills ผ่าน plugin หรือสำเนา repo-level/user-level เพียงทางเดียวใน context เดียวกัน โดยเฉพาะใน repo นี้ที่ Codex discover `.agents/skills/` อยู่แล้ว การติดตั้ง plugin ไม่ได้ตั้ง `AGENTS.md` เป็น global instructions ให้ repo อื่น และ `agent-checkpoint` ยังคงต้องเรียกอย่างชัดเจนตาม `allow_implicit_invocation: false`
+
+รูปแบบและวิธีติดตั้งอ้างอิง [Package your plugin](https://developers.openai.com/plugins/build/plugins) ตรวจเมื่อ 2026-10-07; checks ใน repo ตรวจ metadata และ paths ส่วนการแสดงรายการ การติดตั้ง และ skill discovery ต้องตรวจใน Codex ปลายทางด้วย
 
 ## PHP Security
 
@@ -103,7 +128,7 @@ python -B -m unittest discover -s tests -p "test_*.py" -v
 git diff --check
 ```
 
-Checks ตรวจชื่อและ discovery metadata, link targets และชื่อเรียกใน UI prompt ตามรูปแบบ single-line frontmatter ของ repo นี้ ไม่ใช่ YAML validator เต็มรูปแบบและไม่พิสูจน์พฤติกรรมของ agent
+Checks ตรวจชื่อและ discovery metadata, link targets และชื่อเรียกใน UI prompt ตามรูปแบบ single-line frontmatter ของ repo นี้ รวมถึง JSON และการเชื่อม paths จาก marketplace ไปยัง plugin และ skills เดิม ไม่ใช่ YAML validator เต็มรูปแบบและไม่พิสูจน์พฤติกรรมของ agent หรือการติดตั้ง plugin ใน Codex
 
 ใช้ [กรณีทดสอบพฤติกรรม](tests/skill-scenarios.md) เมื่อแก้ trigger, approval, mode หรือรายงาน ให้ผู้ประเมินเห็นเฉพาะ prompt กับไฟล์ที่ต้องใช้ แล้วเทียบผลกับเกณฑ์ภายหลัง รันในพื้นที่ทดสอบและเก็บงานจริงของผู้ใช้แยกไว้
 

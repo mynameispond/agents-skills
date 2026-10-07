@@ -1,0 +1,22 @@
+{
+  "name": "agents-skills",
+  "version": "0.1.0",
+  "description": "Scoped Git checkpoints and PHP security workflows for Codex.",
+  "author": {
+    "name": "Pond Skills contributors"
+  },
+  "homepage": "https://github.com/mynameispond/agents-skills",
+  "repository": "https://github.com/mynameispond/agents-skills",
+  "license": "MIT",
+  "keywords": ["skills", "git", "checkpoint", "php", "security"],
+  "skills": "./.agents/skills/",
+  "interface": {
+    "displayName": "Pond Agent Skills",
+    "shortDescription": "Git checkpoints and PHP security workflows",
+    "longDescription": "Bundle agent-checkpoint for explicitly requested local Git checkpoints and pond-php-security for PHP implementation and review. Each skill retains its approval and invocation rules.",
+    "developerName": "Pond Skills contributors",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/mynameispond/agents-skills"
+  }
+}
