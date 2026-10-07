@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL Optimization"
+  short_description: "Tune SQL using plans, measurements, and correct results"
+  default_prompt: "Use $sql-optimization to tune this SQL for the actual database engine and version while preserving its results."

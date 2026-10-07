@@ -7,6 +7,17 @@ description: Use when planning, changing, debugging, testing, or reviewing first
 
 Apply PHP security constraints inside the active workflow. Select one mode and merge evidence into the task report.
 
+## Zero Trust at application boundaries
+
+For affected PHP boundaries:
+
+- Do not grant trust solely because a caller is on a private network, localhost, behind a gateway, already logged in, or an internal service. Verify the human or service identity and authorize the action and resource from verified context before protected operations.
+- Grant only the capabilities, resources, and tenants needed for the task. Apply this to service accounts, worker tokens, and database credentials as well as human users.
+- Deny protected operations when identity, ownership, tenant, or current authorization cannot be established. Authorization errors or timeouts must not become permission grants; cached decisions require an established freshness and revocation policy.
+- Recheck relevant security context across queues and service boundaries, and before sensitive effects when permissions or business state may have changed. A valid token or signature alone does not authorize every object or state transition.
+
+Use [identity-data.md](references/identity-data.md) for identity, token scope, revocation, and effect-time checks; [web-input-output.md](references/web-input-output.md) for untrusted data; and [frameworks.md](references/frameworks.md) for enforcement at the actual boundary.
+
 ## Mode router
 
 | Mode | Use when |

@@ -9,7 +9,9 @@
 | [AGENTS.md](AGENTS.md) | ขอบเขตการอนุมัติ การรักษางานเดิม workflow ตามความเสี่ยง validation และรูปแบบรายงาน |
 | [agent-checkpoint](.agents/skills/agent-checkpoint/SKILL.md) | บันทึก local Git checkpoint และส่งต่องาน โดยตรวจสถานะกับการอนุมัติก่อนเขียน |
 | [pond-php-security](.agents/skills/pond-php-security/SKILL.md) | ตรวจ security boundary ของงาน PHP ด้วยโหมดและ references ที่ตรงกับงาน |
-| [Codex marketplace](.agents/plugins/marketplace.json) | แสดง plugin `agents-skills` สำหรับติดตั้ง skills ทั้งสองตัวผ่าน marketplace `pond-skills` |
+| [web-design](.agents/skills/web-design/SKILL.md) | ออกแบบ UI โดยเลือกสี typography และ layout ให้เหมาะกับโจทย์ พร้อมทบทวนความแตกต่างและการใช้งาน |
+| [sql-optimization](.agents/skills/sql-optimization/SKILL.md) | ปรับ SQL และ indexes ตาม engine/version โดยรักษาผลลัพธ์และวัดจาก execution plans กับ workload จริง |
+| [Codex marketplace](.agents/plugins/marketplace.json) | แสดง plugin `agents-skills` สำหรับติดตั้ง skills ใน repo ผ่าน marketplace `pond-skills` |
 | [tests](tests/skill-scenarios.md) | กรณีตรวจพฤติกรรมและเกณฑ์เปรียบเทียบก่อน/หลังปรับคำสั่ง |
 
 Superpowers เป็น workflow เสริมเมื่อ environment รองรับ Repo นี้ไม่ได้ bundle plugin นั้น หากไม่มีให้ใช้ task contracts ใน `AGENTS.md` งานเล็กใช้ proposal ในแชตและ checks ที่เกี่ยวข้อง งานซับซ้อนหรือมีความเสี่ยงจึงใช้แผนและ review ที่ละเอียดขึ้น
@@ -62,9 +64,27 @@ codex plugin marketplace add mynameispond/agents-skills
 
 รูปแบบและวิธีติดตั้งอ้างอิง [Package your plugin](https://developers.openai.com/plugins/build/plugins) ตรวจเมื่อ 2026-10-07; checks ใน repo ตรวจ metadata และ paths ส่วนการแสดงรายการ การติดตั้ง และ skill discovery ต้องตรวจใน Codex ปลายทางด้วย
 
+## Web Design
+
+ใช้ `$web-design` เมื่อสร้าง UI ใหม่หรือปรับหน้าตาของ UI เดิม โดยวางแนวทางสี typography และ layout จากเนื้อหา ผู้ใช้ และเป้าหมายของงาน แล้วทบทวนก่อนลงมือและตรวจงานระหว่างทำ ชื่อแสดงผลคือ **Web Design**
+
+Skill นี้นำเข้าจากไฟล์ `SKILL.md` ที่ผู้ใช้ให้มา โดยเปลี่ยนเฉพาะชื่อ skill และหัวเรื่องเพื่อแยกจาก `frontend-design` ตัวอื่น เนื้อหาคำแนะนำเดิมยังอยู่ครบ และไม่ได้เปลี่ยน skill ที่ติดตั้งอยู่
+
+Skill นี้มี Apache-2.0 license แยกอยู่ที่ [.agents/skills/web-design/LICENSE.txt](.agents/skills/web-design/LICENSE.txt) โดยคัดลอกไฟล์ license จากสำเนา `frontend-design` ที่ติดตั้งในเครื่องขณะนำเข้า ส่วน [LICENSE](LICENSE) ที่ root เป็น MIT สำหรับส่วนของ repository นี้
+
+## SQL Optimization
+
+ใช้ `$sql-optimization` กับ query หรือ path ที่ระบุ เพื่อวิเคราะห์ execution plan และเสนอการปรับ queries, indexes, pagination, batch operations และ monitoring สำหรับ MySQL, PostgreSQL, SQL Server หรือ Oracle โดยตรวจ engine/version จริงก่อนเลือก syntax ชื่อแสดงผลคือ **SQL Optimization**
+
+Skill นี้นำเข้าจากไฟล์ `SKILL (1).md` ที่ผู้ใช้ให้มา โดยเปลี่ยนชื่อและปรับตัวอย่างให้รักษา JOIN/NULL/collation semantics ใช้ cursor ที่เรียงด้วย key ไม่ซ้ำ และระบุ syntax เฉพาะฐานข้อมูล การเปลี่ยน index/schema/configuration หรือการรันกับ production ต้องอยู่ในขอบเขตที่อนุมัติ และ runtime plans เช่น `EXPLAIN ANALYZE` อาจ execute statement จริง
+
+[tests/test_sql_optimization_examples.py](tests/test_sql_optimization_examples.py) รันตัวอย่าง SQL กับ fixtures ใน SQLite memory เพื่อตรวจผลลัพธ์ รวม unmatched/duplicate JOIN rows, อีเมลที่ตัวพิมพ์ต่างกัน, timestamp ซ้ำ, NULL category และ aggregation บนตารางว่าง Checks นี้ไม่ยืนยัน syntax, execution plans หรือ performance ของฐานข้อมูลปลายทาง ต้องตรวจบน engine/version และ workload จริงก่อนอ้างว่าเร็วขึ้น
+
 ## PHP Security
 
 ใช้ `$pond-php-security` กับงานที่เกี่ยวกับ behavior, configuration หรือ security boundary ของ PHP รวมถึง Laravel, Symfony, WordPress และ mixed applications ไม่ต้องโหลดสำหรับ docs-only, formatting-only หรือการเปลี่ยนชื่อที่ยืนยันแล้วว่าไม่เปลี่ยน behavior/security surface
+
+คำแนะนำมีหลักการ **Zero Trust at application boundaries**: ไม่ให้ความเชื่อถือจากตำแหน่งเครือข่ายหรือการเป็น internal service เพียงอย่างเดียว ตรวจสิทธิ์ก่อน protected actions จำกัดสิทธิ์ของผู้ใช้และ service accounts และปฏิเสธเมื่อยืนยันสิทธิ์ไม่ได้ โดยใช้ cache เฉพาะตามนโยบาย freshness/revocation ที่กำหนดไว้
 
 | งาน | โหมด/ความลึก |
 | --- | --- |
@@ -128,7 +148,7 @@ python -B -m unittest discover -s tests -p "test_*.py" -v
 git diff --check
 ```
 
-Checks ตรวจชื่อและ discovery metadata, link targets และชื่อเรียกใน UI prompt ตามรูปแบบ single-line frontmatter ของ repo นี้ รวมถึง JSON และการเชื่อม paths จาก marketplace ไปยัง plugin และ skills เดิม ไม่ใช่ YAML validator เต็มรูปแบบและไม่พิสูจน์พฤติกรรมของ agent หรือการติดตั้ง plugin ใน Codex
+Checks ตรวจชื่อและ discovery metadata, link targets และชื่อเรียกใน UI prompt ตามรูปแบบ single-line frontmatter ของ repo นี้ รวมถึง JSON และการเชื่อม paths จาก marketplace ไปยัง plugin และ skills ใน repo ไม่ใช่ YAML validator เต็มรูปแบบและไม่พิสูจน์พฤติกรรมของ agent หรือการติดตั้ง plugin ใน Codex
 
 ใช้ [กรณีทดสอบพฤติกรรม](tests/skill-scenarios.md) เมื่อแก้ trigger, approval, mode หรือรายงาน ให้ผู้ประเมินเห็นเฉพาะ prompt กับไฟล์ที่ต้องใช้ แล้วเทียบผลกับเกณฑ์ภายหลัง รันในพื้นที่ทดสอบและเก็บงานจริงของผู้ใช้แยกไว้
 

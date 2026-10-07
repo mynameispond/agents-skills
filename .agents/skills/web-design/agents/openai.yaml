@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Design"
+  short_description: "Distinctive frontend design shaped by each brief"
+  default_prompt: "Use $web-design to design this UI with a visual identity suited to its content and audience."
