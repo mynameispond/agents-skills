@@ -10,7 +10,7 @@
 | [agent-checkpoint](.agents/skills/agent-checkpoint/SKILL.md) | บันทึก local Git checkpoint และส่งต่องาน โดยตรวจสถานะกับการอนุมัติก่อนเขียน |
 | [pond-php-security](.agents/skills/pond-php-security/SKILL.md) | ตรวจ security boundary ของงาน PHP ด้วยโหมดและ references ที่ตรงกับงาน |
 | [web-design](.agents/skills/web-design/SKILL.md) | ออกแบบ UI โดยเลือกสี typography และ layout ให้เหมาะกับโจทย์ พร้อมทบทวนความแตกต่างและการใช้งาน |
-| [sql-optimization](.agents/skills/sql-optimization/SKILL.md) | ปรับ SQL และ indexes ตาม engine/version โดยรักษาผลลัพธ์และวัดจาก execution plans กับ workload จริง |
+| [mariadb-query-optimization](.agents/skills/mariadb-query-optimization/SKILL.md) | วิเคราะห์ query ช้าและปรับ indexes, pagination และ optimizer ตามเวอร์ชันของ MariaDB |
 | [Codex marketplace](.agents/plugins/marketplace.json) | แสดง plugin `agents-skills` สำหรับติดตั้ง skills ใน repo ผ่าน marketplace `pond-skills` |
 | [tests](tests/skill-scenarios.md) | กรณีตรวจพฤติกรรมและเกณฑ์เปรียบเทียบก่อน/หลังปรับคำสั่ง |
 
@@ -42,7 +42,7 @@ Reconcile Git state and existing approvals before writing.
 
 ### ติดตั้งผ่าน Codex marketplace
 
-ไฟล์ [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) ประกาศ marketplace `pond-skills` และ plugin `agents-skills` เวอร์ชัน `0.1.0` โดย [.codex-plugin/plugin.json](.codex-plugin/plugin.json) ชี้ไปที่ `./.agents/skills/` ใช้ skills ต้นฉบับชุดเดียวกับการติดตั้งแบบเดิม ไม่ต้องคัดลอกหรือย้ายไฟล์
+ไฟล์ [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) ประกาศ marketplace `pond-skills` และ plugin `agents-skills` เวอร์ชัน `0.2.0` โดย [.codex-plugin/plugin.json](.codex-plugin/plugin.json) ชี้ไปที่ `./.agents/skills/` ใช้ skills ต้นฉบับชุดเดียวกับการติดตั้งแบบเดิม ไม่ต้องคัดลอกหรือย้ายไฟล์
 
 เพิ่ม marketplace จาก local checkout โดยรันที่ root ของ repo:
 
@@ -72,13 +72,13 @@ Skill นี้นำเข้าจากไฟล์ `SKILL.md` ที่ผ�
 
 Skill นี้มี Apache-2.0 license แยกอยู่ที่ [.agents/skills/web-design/LICENSE.txt](.agents/skills/web-design/LICENSE.txt) โดยคัดลอกไฟล์ license จากสำเนา `frontend-design` ที่ติดตั้งในเครื่องขณะนำเข้า ส่วน [LICENSE](LICENSE) ที่ root เป็น MIT สำหรับส่วนของ repository นี้
 
-## SQL Optimization
+## MariaDB Query Optimization
 
-ใช้ `$sql-optimization` กับ query หรือ path ที่ระบุ เพื่อวิเคราะห์ execution plan และเสนอการปรับ queries, indexes, pagination, batch operations และ monitoring สำหรับ MySQL, PostgreSQL, SQL Server หรือ Oracle โดยตรวจ engine/version จริงก่อนเลือก syntax ชื่อแสดงผลคือ **SQL Optimization**
+ใช้ `$mariadb-query-optimization` กับ query หรือ path ที่ระบุ เพื่ออ่านผล `EXPLAIN` และเสนอการปรับ indexes, cursor pagination, histogram statistics และ optimizer settings โดยตรวจเวอร์ชันของ MariaDB ก่อนเลือก syntax หรือฟีเจอร์ ชื่อแสดงผลคือ **MariaDB Query Optimization**
 
-Skill นี้นำเข้าจากไฟล์ `SKILL (1).md` ที่ผู้ใช้ให้มา โดยเปลี่ยนชื่อและปรับตัวอย่างให้รักษา JOIN/NULL/collation semantics ใช้ cursor ที่เรียงด้วย key ไม่ซ้ำ และระบุ syntax เฉพาะฐานข้อมูล การเปลี่ยน index/schema/configuration หรือการรันกับ production ต้องอยู่ในขอบเขตที่อนุมัติ และ runtime plans เช่น `EXPLAIN ANALYZE` อาจ execute statement จริง
+การเปลี่ยน index/schema/configuration หรือการรันกับ production ต้องอยู่ในขอบเขตที่อนุมัติ คำสั่ง `ANALYZE SELECT` รัน query จริงเพื่อเก็บสถิติการทำงาน
 
-[tests/test_sql_optimization_examples.py](tests/test_sql_optimization_examples.py) รันตัวอย่าง SQL กับ fixtures ใน SQLite memory เพื่อตรวจผลลัพธ์ รวม unmatched/duplicate JOIN rows, อีเมลที่ตัวพิมพ์ต่างกัน, timestamp ซ้ำ, NULL category และ aggregation บนตารางว่าง Checks นี้ไม่ยืนยัน syntax, execution plans หรือ performance ของฐานข้อมูลปลายทาง ต้องตรวจบน engine/version และ workload จริงก่อนอ้างว่าเร็วขึ้น
+[tests/test_mariadb_query_optimization_examples.py](tests/test_mariadb_query_optimization_examples.py) รันตัวอย่างช่วงวันที่และ cursor pagination ใน SQLite memory เพื่อตรวจขอบเขตของช่วงวันที่และลำดับของผลลัพธ์ข้ามหน้า การตรวจ syntax, execution plans และ performance ต้องใช้ MariaDB เวอร์ชันเป้าหมายกับ workload จริง
 
 ## PHP Security
 

@@ -1,19 +1,19 @@
 {
   "name": "agents-skills",
-  "version": "0.1.0",
-  "description": "Scoped Git checkpoints, PHP security, frontend design, and SQL optimization for Codex.",
+  "version": "0.2.0",
+  "description": "Scoped Git checkpoints, PHP security, frontend design, and MariaDB query optimization for Codex.",
   "author": {
     "name": "Pond Skills contributors"
   },
   "homepage": "https://github.com/mynameispond/agents-skills",
   "repository": "https://github.com/mynameispond/agents-skills",
   "license": "MIT",
-  "keywords": ["skills", "git", "checkpoint", "php", "security", "frontend", "design", "sql", "optimization"],
+  "keywords": ["skills", "git", "checkpoint", "php", "security", "frontend", "design", "sql", "mariadb", "optimization"],
   "skills": "./.agents/skills/",
   "interface": {
     "displayName": "Pond Agent Skills",
-    "shortDescription": "Git, PHP security, frontend design, and SQL optimization",
-    "longDescription": "Bundle agent-checkpoint for explicitly requested local Git checkpoints, pond-php-security for PHP implementation and review, web-design for distinctive UI design, and sql-optimization for database-specific query tuning. Each skill retains its approval, invocation, and license terms.",
+    "shortDescription": "Git, PHP security, frontend design, and MariaDB query tuning",
+    "longDescription": "Bundle agent-checkpoint for explicitly requested local Git checkpoints, pond-php-security for PHP implementation and review, web-design for distinctive UI design, and mariadb-query-optimization for MariaDB query tuning. Each skill retains its approval, invocation, and license terms.",
     "developerName": "Pond Skills contributors",
     "category": "Developer Tools",
     "capabilities": ["Read", "Write"],

@@ -1,0 +1,4 @@
+interface:
+  display_name: "MariaDB Query Optimization"
+  short_description: "Best practices for query optimization in MariaDB"
+  default_prompt: "Use $mariadb-query-optimization to tune this query for the target MariaDB version while preserving its results."
